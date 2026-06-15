@@ -1,0 +1,2 @@
+# mangoplus
+MangaPlus API Client
