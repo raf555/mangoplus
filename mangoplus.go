@@ -20,6 +20,9 @@ import (
 )
 
 // Client is a wrapper for MangaPlus APIs.
+//
+// Note: Services do not guarantee all fields are populated, some may be zero values.
+// Callers are responsible for handling this appropriately.
 type Client struct {
 	httpClient *http.Client
 
@@ -39,6 +42,7 @@ type Client struct {
 
 	Registration *RegistrationService
 	TitleList    *TitleListService
+	Title        *TitleService
 }
 
 type service struct {
@@ -133,6 +137,7 @@ func newClient(opts *clientOptions) (*Client, error) {
 	// services
 	c.Registration = (*RegistrationService)(&c.common)
 	c.TitleList = (*TitleListService)(&c.common)
+	c.Title = (*TitleService)(&c.common)
 
 	if opts.autoRegister {
 		_, err = c.Register(opts.registCtx)

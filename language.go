@@ -23,3 +23,28 @@ func languageFromProto(pb proto.Language) Language {
 	}
 	return Language(val)
 }
+
+// func toMangaPlusLang(lang Language) string {
+// 	switch lang {
+// 	case LanguageEnglish:
+// 		return "eng"
+// 	case LanguageSpanish:
+// 		return "esp"
+// 	case LanguageFrench:
+// 		return "fra"
+// 	case LanguageIndonesian:
+// 		return "ind"
+// 	case LanguagePortugueseBR:
+// 		return "ptb"
+// 	case LanguageRussian:
+// 		return "rus"
+// 	case LanguageThai:
+// 		return "tha"
+// 	case LanguageVietnamese:
+// 		return "vie"
+// 	case LanguageGerman:
+// 		return "deu"
+// 	default:
+// 		return ""
+// 	}
+// }

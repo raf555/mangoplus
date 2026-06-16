@@ -23,33 +23,13 @@ func allTitlesViewV2FromProto(pb *proto.AllTitlesViewV2) AllTitlesViewV2 {
 
 type AllTitlesGroupV2 struct {
 	TheTitle string
-	Titles   []TitleV2
+	Titles   []Title
 }
 
 func allTitlesGroupV2FromProto(pb *proto.AllTitlesGroup) AllTitlesGroupV2 {
 	return AllTitlesGroupV2{
 		TheTitle: pb.GetTheTitle(),
-		Titles:   slicex.Map(pb.GetTitles(), titleV2FromProto),
-	}
-}
-
-type TitleV2 struct {
-	TitleID           int
-	Name              string
-	Author            string
-	PortraitImageURL  string
-	LandscapeImageURL string
-	Language          Language
-}
-
-func titleV2FromProto(pb *proto.Title) TitleV2 {
-	return TitleV2{
-		TitleID:           int(pb.GetTitleId()),
-		Name:              pb.GetName(),
-		Author:            pb.GetAuthor(),
-		PortraitImageURL:  pb.GetPortraitImageUrl(),
-		LandscapeImageURL: pb.GetLandscapeImageUrl(),
-		Language:          languageFromProto(pb.GetLanguage()),
+		Titles:   slicex.Map(pb.GetTitles(), titleFromProto),
 	}
 }
 
