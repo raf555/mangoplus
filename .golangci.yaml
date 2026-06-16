@@ -1,0 +1,32 @@
+version: "2"
+
+linters:
+  default: standard
+
+  enable:
+    - bodyclose
+    - errcheck
+    - ineffassign
+    - misspell
+    - nilerr
+    - staticcheck
+    - unconvert
+    - whitespace
+
+  # disable:
+  #   - revive
+
+  exclusions:
+    generated: lax
+    warn-unused: true
+
+    paths:
+      - .*\.pb\.go$
+
+    # Light exclusions for tests
+    rules:
+      - path: _test\.go
+        linters:
+          - errcheck
+          - dupl
+          - gosec
