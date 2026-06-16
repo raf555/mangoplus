@@ -191,9 +191,18 @@ func (c *Client) Register(ctx context.Context) (string, error) {
 type requestOptions struct {
 	bodyContentType string
 	body            io.Reader
+	omitSecret      bool
 }
 
 type RequestOptionsFunc func(*requestOptions) error
+
+// WithoutSecret instructs [NewRequest] to omit the client secret from the request query params.
+func WithoutSecret() RequestOptionsFunc {
+	return func(ro *requestOptions) error {
+		ro.omitSecret = true
+		return nil
+	}
+}
 
 func WithRequestBody(contentType string, b io.Reader) RequestOptionsFunc {
 	return func(ro *requestOptions) error {
@@ -244,9 +253,7 @@ func (c *Client) NewRequest(ctx context.Context, method string, u string, opts .
 	q.Set("os", "android")
 	q.Set("os_ver", c.osVersion)
 	q.Set("app_ver", c.appVersion)
-	// to force the API to return JSON response. Right now we use protobuf since it should be faster.
-	// q.Set("format", "json")
-	if c.secret != "" {
+	if c.secret != "" && !reqOpts.omitSecret {
 		q.Set("secret", c.secret)
 	}
 

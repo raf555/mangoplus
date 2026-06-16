@@ -24,7 +24,7 @@ func languageFromProto(pb proto.Language) Language {
 	return Language(val)
 }
 
-func languagefromMangaPlusLang(lang string) Language {
+func languageFromMangaPlusLang(lang string) Language {
 	switch lang {
 	case "eng":
 		return LanguageEnglish

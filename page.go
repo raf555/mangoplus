@@ -21,10 +21,10 @@ func mangaPageFromProto(pb *proto.Page_MangaPage) MangaPage {
 type PageType string
 
 const (
-	PageTypeSingle = "SINGLE"
-	PageTypeLeft   = "LEFT"
-	PageTypeRight  = "RIGHT"
-	PageTypeDouble = "DOUBLE"
+	PageTypeSingle PageType = "SINGLE"
+	PageTypeLeft   PageType = "LEFT"
+	PageTypeRight  PageType = "RIGHT"
+	PageTypeDouble PageType = "DOUBLE"
 )
 
 func pageTypeFromProto(pb proto.Page_PageType) PageType {

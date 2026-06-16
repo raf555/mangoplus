@@ -48,7 +48,7 @@ func mangaViewerFromProto(pb *proto.MangaViewer) MangaViewer {
 		TitleID:            int(pb.GetTitleId()),
 		StartFromRight:     pb.GetStartFromRight(),
 		IsHorizontalOnly:   pb.GetIsHorizontalOnly(),
-		TitleLanguage:      languagefromMangaPlusLang(pb.GetTitleLanguage()),
+		TitleLanguage:      languageFromMangaPlusLang(pb.GetTitleLanguage()),
 		AvailableLanguages: slicex.Map(pb.GetTitleAvailableLanguages(), mangaAvailableLanguageFromProto),
 	}
 }

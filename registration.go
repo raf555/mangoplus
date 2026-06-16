@@ -23,14 +23,10 @@ func (r *RegistrationService) Register(ctx context.Context, deviceToken, securit
 	uParams.Set("security_key", securityKey)
 	u.RawQuery = uParams.Encode()
 
-	req, err := r.client.NewRequest(ctx, http.MethodPut, u.String())
+	req, err := r.client.NewRequest(ctx, http.MethodPut, u.String(), WithoutSecret())
 	if err != nil {
 		return RegistrationData{}, err
 	}
-
-	q := req.URL.Query()
-	q.Del("secret")
-	req.URL.RawQuery = q.Encode()
 
 	res, err := r.client.protoDo(req)
 	if err != nil {
