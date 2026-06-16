@@ -15,7 +15,7 @@ const (
 	// The default API URL, which is used by app.
 	appAPIURL = "https://jumpg-api.tokyo-cdn.com/api"
 	// Browser API URL. Limited to what's available on the browser.
-	webAPIURL = "https://jumpg-webapi.tokyo-cdn.com/api"
+	// webAPIURL = "https://jumpg-webapi.tokyo-cdn.com/api"
 )
 
 type clientOptions struct {
@@ -126,7 +126,7 @@ func WithAppVersion(appVer string) ClientOptionsFunc {
 // WithAndroidID returns a [ClientOptionsFunc] that sets the android ID
 // for a [Client]. If not set, a random android ID will be generated.
 //
-// Android ID is used for registrating the client to retrieve the MangaPlus secret.
+// Android ID is used for registering the client to retrieve the MangaPlus secret.
 // If secret is already provided, [NewClient] may return error.
 func WithAndroidID(androidID string) ClientOptionsFunc {
 	return func(co *clientOptions) error {
