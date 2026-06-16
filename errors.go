@@ -28,7 +28,7 @@ type ProtoError struct {
 }
 
 func (p *ProtoError) Error() string {
-	return fmt.Sprintf("mangoplus: %s: %s", p.EnglishPopup.Subject, p.EnglishPopup.Body)
+	return fmt.Sprintf("mangoplus: proto error: %s: %s", p.EnglishPopup.Subject, p.EnglishPopup.Body)
 }
 
 func protoErrorFromProto(pb *proto.ErrorResult) *ProtoError {
@@ -36,9 +36,7 @@ func protoErrorFromProto(pb *proto.ErrorResult) *ProtoError {
 		Action:       errorActionFromProto(pb.GetAction()),
 		EnglishPopup: popupOsDefaultFromProto(pb.GetEnglishPopup()),
 		DebugInfo:    pb.GetDebugInfo(),
-		Popups: slicex.Map(pb.GetPopups(), func(e *proto.Popup_OSDefault) PopupOsDefault {
-			return popupOsDefaultFromProto(e)
-		}),
+		Popups:       slicex.Map(pb.GetPopups(), popupOsDefaultFromProto),
 	}
 }
 

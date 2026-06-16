@@ -7,36 +7,38 @@ import (
 	"net/url"
 )
 
+// RegistrationService wraps registration APIs.
 type RegistrationService service
 
-type RegisterResult struct {
+type RegistrationData struct {
 	DeviceSecret string
 }
 
 // Register registers provided device token and security key to MangaPlus. It returns a device secret usable for most MangaPlus API.
-func (r *RegistrationService) Register(ctx context.Context, deviceToken, securityKey string) (RegisterResult, error) {
+func (r *RegistrationService) Register(ctx context.Context, deviceToken, securityKey string) (RegistrationData, error) {
 	u := r.client.baseURL.JoinPath("/register")
 
 	uParams := url.Values{}
 	uParams.Set("device_token", deviceToken)
 	uParams.Set("security_key", securityKey)
+	u.RawQuery = uParams.Encode()
 
-	req, err := r.client.NewRequest(ctx, http.MethodPut, u.String(), WithRequestParams(uParams))
+	req, err := r.client.NewRequest(ctx, http.MethodPut, u.String(), WithoutSecret())
 	if err != nil {
-		return RegisterResult{}, err
+		return RegistrationData{}, err
 	}
 
 	res, err := r.client.protoDo(req)
 	if err != nil {
-		return RegisterResult{}, err
+		return RegistrationData{}, err
 	}
 
 	secret := res.GetRegisterationData().GetDeviceSecret()
 	if secret == "" {
-		return RegisterResult{}, errors.New("mangoplus: unexpected empty secret returned")
+		return RegistrationData{}, errors.New("mangoplus: unexpected empty secret returned")
 	}
 
-	return RegisterResult{
+	return RegistrationData{
 		DeviceSecret: secret,
 	}, nil
 }

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"maps"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -20,6 +19,9 @@ import (
 )
 
 // Client is a wrapper for MangaPlus APIs.
+//
+// Note: Services do not guarantee all fields are populated, some response fields may be unpopulated / zero value.
+// Callers are responsible for handling this appropriately.
 type Client struct {
 	httpClient *http.Client
 
@@ -35,7 +37,12 @@ type Client struct {
 
 	common service
 
+	// Services
+
 	Registration *RegistrationService
+	TitleList    *TitleListService
+	Title        *TitleService
+	Manga        *MangaService
 }
 
 type service struct {
@@ -54,7 +61,25 @@ func NewClient(opts ...ClientOptionsFunc) (*Client, error) {
 		}
 	}
 
-	return newClient(co)
+	c, err := newClient(co)
+	if err != nil {
+		return nil, err
+	}
+
+	// services
+	c.Registration = (*RegistrationService)(&c.common)
+	c.TitleList = (*TitleListService)(&c.common)
+	c.Title = (*TitleService)(&c.common)
+	c.Manga = (*MangaService)(&c.common)
+
+	if co.autoRegister {
+		_, err = c.Register(co.registCtx)
+		if err != nil {
+			return nil, fmt.Errorf("mangoplus: auto register: %w", err)
+		}
+	}
+
+	return c, nil
 }
 
 func newClient(opts *clientOptions) (*Client, error) {
@@ -127,16 +152,6 @@ func newClient(opts *clientOptions) (*Client, error) {
 
 	c.common.client = c
 
-	// services
-	c.Registration = (*RegistrationService)(&c.common)
-
-	if opts.autoRegister {
-		_, err = c.Register(opts.registCtx)
-		if err != nil {
-			return nil, fmt.Errorf("mangoplus: auto register: %w", err)
-		}
-	}
-
 	return c, nil
 }
 
@@ -174,35 +189,17 @@ func (c *Client) Register(ctx context.Context) (string, error) {
 }
 
 type requestOptions struct {
-	params  url.Values
-	headers http.Header
-
 	bodyContentType string
 	body            io.Reader
+	omitSecret      bool
 }
 
 type RequestOptionsFunc func(*requestOptions) error
 
-func WithRequestParams(u url.Values) RequestOptionsFunc {
+// WithoutSecret instructs [NewRequest] to omit the client secret from the request query params.
+func WithoutSecret() RequestOptionsFunc {
 	return func(ro *requestOptions) error {
-		for k, vs := range u {
-			for _, v := range vs {
-				ro.params.Add(k, v)
-			}
-		}
-
-		return nil
-	}
-}
-
-func WithRequestHeaders(h http.Header) RequestOptionsFunc {
-	return func(ro *requestOptions) error {
-		for k, vs := range h {
-			for _, v := range vs {
-				ro.headers.Add(k, v)
-			}
-		}
-
+		ro.omitSecret = true
 		return nil
 	}
 }
@@ -218,7 +215,7 @@ func WithRequestBody(contentType string, b io.Reader) RequestOptionsFunc {
 // NewRequest creates a new [http.Request] with necessary information attached to it.
 // Additional data may be provided via [RequestOptionsFunc] if needed.
 //
-// If u has prefix /, it is assumed to be a URL path and part of the [Client] base URL. Otherwise, it'll be treated as-is.
+// If `u` has prefix `/`, it is assumed to be a URL path and part of the [Client] base URL. Otherwise, it'll be treated as-is.
 func (c *Client) NewRequest(ctx context.Context, method string, u string, opts ...RequestOptionsFunc) (*http.Request, error) {
 	if c.osVersion == "" {
 		return nil, errors.New("mangoplus: empty client os version")
@@ -243,49 +240,39 @@ func (c *Client) NewRequest(ctx context.Context, method string, u string, opts .
 		return nil, err
 	}
 
-	reqOpts := &requestOptions{
-		params:  uri.Query(),
-		headers: make(http.Header),
-	}
-
+	reqOpts := &requestOptions{}
 	for _, opt := range opts {
-		err = opt(reqOpts)
-		if err != nil {
+		if err = opt(reqOpts); err != nil {
 			return nil, err
 		}
 	}
 
-	// overwrite the rest with ours
-	reqOpts.params.Set("os", "android")
-	reqOpts.params.Set("os_ver", c.osVersion)
-	reqOpts.params.Set("app_ver", c.appVersion)
-	// to force the API to return JSON response. Right now we use protobuf since it should be faster.
-	// reqOpts.params.Set("format", "json")
-	if c.secret != "" {
-		reqOpts.params.Set("secret", c.secret)
+	q := uri.Query()
+
+	// overwrite with ours
+	q.Set("os", "android")
+	q.Set("os_ver", c.osVersion)
+	q.Set("app_ver", c.appVersion)
+	if c.secret != "" && !reqOpts.omitSecret {
+		q.Set("secret", c.secret)
 	}
 
-	reqOpts.headers.Set("User-Agent", c.userAgent)
+	uri.RawQuery = q.Encode()
 
-	uri.RawQuery = reqOpts.params.Encode()
-
-	var body io.Reader
-	if reqOpts.body != nil {
-		body = reqOpts.body
-		reqOpts.headers.Set("Content-Type", reqOpts.bodyContentType)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, method, uri.String(), body)
+	req, err := http.NewRequestWithContext(ctx, method, uri.String(), reqOpts.body)
 	if err != nil {
 		return nil, err
 	}
 
-	maps.Copy(req.Header, reqOpts.headers)
+	req.Header.Set("User-Agent", c.userAgent)
+	if reqOpts.body != nil {
+		req.Header.Set("Content-Type", reqOpts.bodyContentType)
+	}
 
 	return req, nil
 }
 
-func (c *Client) bareProtoDo(req *http.Request) (*proto.Response, error) {
+func (c *Client) rawProtoDo(req *http.Request) (*proto.Response, error) {
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -315,7 +302,7 @@ func (c *Client) bareProtoDo(req *http.Request) (*proto.Response, error) {
 }
 
 func (c *Client) protoDo(req *http.Request) (*proto.SuccessResult, error) {
-	resPb, err := c.bareProtoDo(req)
+	resPb, err := c.rawProtoDo(req)
 	if err != nil {
 		return nil, err
 	}
