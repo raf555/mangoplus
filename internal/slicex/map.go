@@ -1,11 +1,11 @@
 package slicex
 
-func Map[S ~[]E, O []T, E, T any](s S, mapFn func(E) T) O {
+func Map[S ~[]E, E, T any](s S, mapFn func(E) T) []T {
 	if s == nil {
 		return nil
 	}
 
-	o := make(O, len(s))
+	o := make([]T, len(s))
 	for i, v := range s {
 		o[i] = mapFn(v)
 	}

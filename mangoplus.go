@@ -35,7 +35,10 @@ type Client struct {
 
 	common service
 
+	// Services
+
 	Registration *RegistrationService
+	TitleList    *TitleListService
 }
 
 type service struct {
@@ -129,6 +132,7 @@ func newClient(opts *clientOptions) (*Client, error) {
 
 	// services
 	c.Registration = (*RegistrationService)(&c.common)
+	c.TitleList = (*TitleListService)(&c.common)
 
 	if opts.autoRegister {
 		_, err = c.Register(opts.registCtx)
@@ -285,7 +289,7 @@ func (c *Client) NewRequest(ctx context.Context, method string, u string, opts .
 	return req, nil
 }
 
-func (c *Client) bareProtoDo(req *http.Request) (*proto.Response, error) {
+func (c *Client) preDo(req *http.Request) (*proto.Response, error) {
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -314,8 +318,8 @@ func (c *Client) bareProtoDo(req *http.Request) (*proto.Response, error) {
 	return &resPb, nil
 }
 
-func (c *Client) protoDo(req *http.Request) (*proto.SuccessResult, error) {
-	resPb, err := c.bareProtoDo(req)
+func (c *Client) do(req *http.Request) (*proto.SuccessResult, error) {
+	resPb, err := c.preDo(req)
 	if err != nil {
 		return nil, err
 	}
