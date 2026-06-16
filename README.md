@@ -27,7 +27,7 @@ if err != nil {
     // handle error
 }
 
-manga, err := client.Title.GetTitleDetail(context.Background(), 100185)
+manga, err := client.Title.GetTitleDetailV3(context.Background(), 100185)
 if err != nil {
     // handle error
 }
