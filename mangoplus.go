@@ -21,7 +21,7 @@ import (
 
 // Client is a wrapper for MangaPlus APIs.
 //
-// Note: Services do not guarantee all fields are populated, some may be zero values.
+// Note: Services do not guarantee all fields are populated; some response fields may be unpopulated.
 // Callers are responsible for handling this appropriately.
 type Client struct {
 	httpClient *http.Client
@@ -294,7 +294,7 @@ func (c *Client) NewRequest(ctx context.Context, method string, u string, opts .
 	return req, nil
 }
 
-func (c *Client) preDo(req *http.Request) (*proto.Response, error) {
+func (c *Client) rawProtoDo(req *http.Request) (*proto.Response, error) {
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -323,8 +323,8 @@ func (c *Client) preDo(req *http.Request) (*proto.Response, error) {
 	return &resPb, nil
 }
 
-func (c *Client) do(req *http.Request) (*proto.SuccessResult, error) {
-	resPb, err := c.preDo(req)
+func (c *Client) protoDo(req *http.Request) (*proto.SuccessResult, error) {
+	resPb, err := c.rawProtoDo(req)
 	if err != nil {
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package mangoplus
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/raf555/mangoplus/internal/proto"
@@ -41,10 +42,15 @@ func (t *TitleListService) AllV2(ctx context.Context) (AllTitlesViewV2, error) {
 		return AllTitlesViewV2{}, err
 	}
 
-	res, err := t.client.do(req)
+	res, err := t.client.protoDo(req)
 	if err != nil {
 		return AllTitlesViewV2{}, err
 	}
 
-	return allTitlesViewV2FromProto(res.GetAllTitlesViewV2()), nil
+	v := res.GetAllTitlesViewV2()
+	if v == nil {
+		return AllTitlesViewV2{}, errors.New("mangoplus: unexpected nil all titles view")
+	}
+
+	return allTitlesViewV2FromProto(v), nil
 }

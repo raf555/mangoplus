@@ -3,13 +3,13 @@ package mangoplus
 import "github.com/raf555/mangoplus/internal/proto"
 
 type Label struct {
-	Label       LabelCode
+	Code        LabelCode
 	Description string
 }
 
 func labelFromProto(pb *proto.Label) Label {
 	return Label{
-		Label:       labelCodeFromProto(pb.GetLabel()),
+		Code:        labelCodeFromProto(pb.GetLabel()),
 		Description: pb.GetDescription(),
 	}
 }

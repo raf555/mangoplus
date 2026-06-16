@@ -27,7 +27,7 @@ func (r *RegistrationService) Register(ctx context.Context, deviceToken, securit
 		return RegistrationData{}, err
 	}
 
-	res, err := r.client.do(req)
+	res, err := r.client.protoDo(req)
 	if err != nil {
 		return RegistrationData{}, err
 	}

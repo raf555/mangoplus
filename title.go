@@ -2,6 +2,7 @@ package mangoplus
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -163,10 +164,15 @@ func (t *TitleService) GetTitleDetailV3(ctx context.Context, titleID int) (Title
 		return TitleDetailView{}, err
 	}
 
-	res, err := t.client.do(req)
+	res, err := t.client.protoDo(req)
 	if err != nil {
 		return TitleDetailView{}, err
 	}
 
-	return titleDetailViewFromProto(res.GetTitleDetailView()), nil
+	v := res.GetTitleDetailView()
+	if v == nil {
+		return TitleDetailView{}, errors.New("mangoplus: unexpected nil title detail view")
+	}
+
+	return titleDetailViewFromProto(v), nil
 }
