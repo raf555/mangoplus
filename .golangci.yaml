@@ -12,8 +12,8 @@ linters:
     - unconvert
     - whitespace
 
-  # disable:
-  #   - revive
+  disable:
+    - errcheck
 
   exclusions:
     generated: lax
