@@ -158,8 +158,9 @@ func (t *TitleService) GetTitleDetailV3(ctx context.Context, titleID int) (Title
 
 	uParams := url.Values{}
 	uParams.Set("title_id", strconv.Itoa(titleID))
+	u.RawQuery = uParams.Encode()
 
-	req, err := t.client.NewRequest(ctx, http.MethodGet, u.String(), WithRequestParams(uParams))
+	req, err := t.client.NewRequest(ctx, http.MethodGet, u.String())
 	if err != nil {
 		return TitleDetailView{}, err
 	}

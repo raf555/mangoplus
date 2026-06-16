@@ -28,7 +28,7 @@ type ProtoError struct {
 }
 
 func (p *ProtoError) Error() string {
-	return fmt.Sprintf("mangoplus: %s: %s", p.EnglishPopup.Subject, p.EnglishPopup.Body)
+	return fmt.Sprintf("mangoplus: proto error: %s: %s", p.EnglishPopup.Subject, p.EnglishPopup.Body)
 }
 
 func protoErrorFromProto(pb *proto.ErrorResult) *ProtoError {
