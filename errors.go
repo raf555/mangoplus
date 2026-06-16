@@ -1,0 +1,60 @@
+package mangoplus
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/raf555/mangoplus/internal/proto"
+	"github.com/raf555/mangoplus/internal/slicex"
+)
+
+// APIError is an error returned when MangaPlus API returns non-200 status code.
+type APIError struct {
+	StatusCode int
+	Headers    http.Header
+	RawBody    []byte
+}
+
+func (a *APIError) Error() string {
+	return fmt.Sprintf("mangoplus: API returned non-200 status code: %d", a.StatusCode)
+}
+
+// ProtoError is an error returned when MangaPlus API returns an error response.
+type ProtoError struct {
+	Action       ErrorAction
+	EnglishPopup PopupOsDefault
+	DebugInfo    string
+	Popups       []PopupOsDefault
+}
+
+func (p *ProtoError) Error() string {
+	return fmt.Sprintf("mangoplus: %s: %s", p.EnglishPopup.Subject, p.EnglishPopup.Body)
+}
+
+func protoErrorFromProto(pb *proto.ErrorResult) *ProtoError {
+	return &ProtoError{
+		Action:       errorActionFromProto(pb.GetAction()),
+		EnglishPopup: popupOsDefaultFromProto(pb.GetEnglishPopup()),
+		DebugInfo:    pb.GetDebugInfo(),
+		Popups: slicex.Map(pb.GetPopups(), func(e *proto.Popup_OSDefault) PopupOsDefault {
+			return popupOsDefaultFromProto(e)
+		}),
+	}
+}
+
+type ErrorAction string
+
+const (
+	ErrorActionDefault       ErrorAction = "DEFAULT"
+	ErrorActionUnauthorized  ErrorAction = "UNAUTHORIZED"
+	ErrorActionMaintenance   ErrorAction = "MAINTENANCE"
+	ErrorActionGeoIPBlocking ErrorAction = "GEOIP_BLOCKING"
+)
+
+func errorActionFromProto(pb proto.ErrorResult_Action) ErrorAction {
+	val, ok := proto.ErrorResult_Action_name[int32(pb)]
+	if !ok {
+		return ""
+	}
+	return ErrorAction(val)
+}
