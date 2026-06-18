@@ -3,18 +3,20 @@ package mangoplus
 import "github.com/raf555/mangoplus/internal/proto"
 
 type MangaPage struct {
-	ImageURL string
-	Width    int
-	Height   int
-	Type     PageType
+	ImageURL      string
+	Width         int
+	Height        int
+	Type          PageType
+	EncryptionKey string
 }
 
 func mangaPageFromProto(pb *proto.Page_MangaPage) MangaPage {
 	return MangaPage{
-		ImageURL: pb.GetImageUrl(),
-		Width:    int(pb.GetWidth()),
-		Height:   int(pb.GetHeight()),
-		Type:     pageTypeFromProto(pb.GetType()),
+		ImageURL:      pb.GetImageUrl(),
+		Width:         int(pb.GetWidth()),
+		Height:        int(pb.GetHeight()),
+		Type:          pageTypeFromProto(pb.GetType()),
+		EncryptionKey: pb.GetEncryptionKey(),
 	}
 }
 
