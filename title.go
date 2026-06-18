@@ -41,6 +41,7 @@ type TitleDetailView struct {
 	ImageURL           string
 	Overview           string
 	BackgroundImageURL string
+	TitleImageURL      string
 	NextTimestamp      time.Time
 	IsSimulRelease     bool
 	Rating             Rating
@@ -59,6 +60,7 @@ func titleDetailViewFromProto(pb *proto.TitleDetailView) TitleDetailView {
 		ImageURL:           pb.GetTitleImageUrl(),
 		Overview:           pb.GetOverview(),
 		BackgroundImageURL: pb.GetBackgroundImageUrl(),
+		TitleImageURL:      pb.GetTitleImageUrl(),
 		NextTimestamp:      timex.Unix(int64(pb.GetNextTimeStamp())),
 		IsSimulRelease:     pb.GetIsSimulReleased(),
 		Rating:             ratingFromProto(pb.GetRating()),

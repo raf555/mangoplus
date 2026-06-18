@@ -23,10 +23,7 @@ type MangaViewer struct {
 	TitleName          string
 	ChapterName        string
 	NumberOfComments   int
-	IsVerticalOnly     bool
 	TitleID            int
-	StartFromRight     bool
-	IsHorizontalOnly   bool
 	TitleLanguage      Language
 	AvailableLanguages []MangaAvailableLanguage
 }
@@ -56,10 +53,7 @@ func mangaViewerFromProto(pb *proto.MangaViewer) MangaViewer {
 		TitleName:          pb.GetTitleName(),
 		ChapterName:        pb.GetChapterName(),
 		NumberOfComments:   int(pb.GetNumberOfComments()),
-		IsVerticalOnly:     pb.GetIsVerticalOnly(),
 		TitleID:            int(pb.GetTitleId()),
-		StartFromRight:     pb.GetStartFromRight(),
-		IsHorizontalOnly:   pb.GetIsHorizontalOnly(),
 		TitleLanguage:      languageFromMangaPlusLang(pb.GetTitleLanguage()),
 		AvailableLanguages: slicex.Map(pb.GetTitleAvailableLanguages(), mangaAvailableLanguageFromProto),
 	}
