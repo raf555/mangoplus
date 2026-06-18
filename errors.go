@@ -1,6 +1,7 @@
 package mangoplus
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -29,6 +30,29 @@ type ProtoError struct {
 
 func (p *ProtoError) Error() string {
 	return fmt.Sprintf("mangoplus: proto error: %s: %s", p.EnglishPopup.Subject, p.EnglishPopup.Body)
+}
+
+var (
+	// ErrNotFound is an error when MangaPlus returned proto error with Not Found subject.
+	ErrNotFound = errors.New("mangoplus: not found")
+
+	// ErrInvalidParameter is an error when MangaPlus returned proto error with Invalid Parameter subject.
+	ErrInvalidParameter = errors.New("mangoplus: invalid parameter")
+
+	// ErrNewVersionAvailable is an error when MangaPlus returned proto error with NEW VERSION AVAILABLE subject.
+	ErrNewVersionAvailable = errors.New("mangoplus: new version available")
+)
+
+func (p *ProtoError) Is(target error) bool {
+	switch target {
+	case ErrNotFound:
+		return p.EnglishPopup.Subject == "Not Found"
+	case ErrInvalidParameter:
+		return p.EnglishPopup.Subject == "Invalid Parameter"
+	case ErrNewVersionAvailable:
+		return p.EnglishPopup.Subject == "NEW VERSION AVAILABLE"
+	}
+	return false
 }
 
 func protoErrorFromProto(pb *proto.ErrorResult) *ProtoError {
