@@ -15,7 +15,8 @@ import (
 type MangaService service
 
 type MangaViewer struct {
-	MangaPages []MangaPage
+	MangaPages     []MangaPage
+	CurrentChapter Chapter
 	// TODO: There should be another field named Pages to hold all kind of page (ads, banner, etc).
 
 	ChapterID          int
@@ -31,15 +32,26 @@ type MangaViewer struct {
 }
 
 func mangaViewerFromProto(pb *proto.MangaViewer) MangaViewer {
+	currentChapter := Chapter{}
 	pages := make([]MangaPage, 0, len(pb.GetPages()))
+
 	for _, p := range pb.GetPages() {
 		if mp := p.GetMangaPage(); mp != nil {
 			pages = append(pages, mangaPageFromProto(mp))
+		}
+
+		// usually only in last page
+		if lp := p.GetLastPage(); lp != nil {
+			cp := lp.GetCurrentChapter()
+			if cp != nil {
+				currentChapter = chapterFromProto(cp)
+			}
 		}
 	}
 
 	return MangaViewer{
 		MangaPages:         pages,
+		CurrentChapter:     currentChapter,
 		ChapterID:          int(pb.GetChapterId()),
 		TitleName:          pb.GetTitleName(),
 		ChapterName:        pb.GetChapterName(),
