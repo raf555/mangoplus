@@ -41,6 +41,9 @@ var (
 
 	// ErrNewVersionAvailable is an error when MangaPlus returned proto error with NEW VERSION AVAILABLE subject.
 	ErrNewVersionAvailable = errors.New("mangoplus: new version available")
+
+	// ErrInvalidUserAccess is an error when MangaPlus returned proto error with Invalid user subject.
+	ErrInvalidUserAccess = errors.New("mangoplus: invalid user access")
 )
 
 func (p *ProtoError) Is(target error) bool {
@@ -51,6 +54,8 @@ func (p *ProtoError) Is(target error) bool {
 		return p.EnglishPopup.Subject == "Invalid Parameter"
 	case ErrNewVersionAvailable:
 		return p.EnglishPopup.Subject == "NEW VERSION AVAILABLE"
+	case ErrInvalidUserAccess:
+		return p.EnglishPopup.Subject == "Invalid user"
 	}
 	return false
 }
