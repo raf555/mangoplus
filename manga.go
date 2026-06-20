@@ -26,6 +26,9 @@ type MangaViewer struct {
 	TitleID            int
 	TitleLanguage      Language
 	AvailableLanguages []MangaAvailableLanguage
+	StartFromRight     bool
+	IsVerticalOnly     bool
+	IsHorizontalOnly   bool
 }
 
 func mangaViewerFromProto(pb *proto.MangaViewer) MangaViewer {
@@ -56,6 +59,9 @@ func mangaViewerFromProto(pb *proto.MangaViewer) MangaViewer {
 		TitleID:            int(pb.GetTitleId()),
 		TitleLanguage:      languageFromMangaPlusLang(pb.GetTitleLanguage()),
 		AvailableLanguages: slicex.Map(pb.GetTitleAvailableLanguages(), mangaAvailableLanguageFromProto),
+		StartFromRight:     pb.GetStartFromRight(),
+		IsHorizontalOnly:   pb.GetIsHorizontalOnly(),
+		IsVerticalOnly:     pb.GetIsVerticalOnly(),
 	}
 }
 
