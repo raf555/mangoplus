@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	defaultUserAgent  = "okhttp/4.12.0"
-	defaultOSVersion  = "30"
-	defaultAppVersion = "251"
+	defaultUserAgent  = "okhttp/5.5.0"
+	defaultOSVersion  = "37"
+	defaultAppVersion = "265"
 
 	// The default API URL, which is used by app.
 	appAPIURL = "https://jumpg-api.tokyo-cdn.com/api"
