@@ -293,7 +293,8 @@ func TestWithAndroidIDAndSecret_AreMutuallyExclusive(t *testing.T) {
 }
 
 func TestWithAutoRegister_NilCtx(t *testing.T) {
-	if _, err := mangoplus.NewClient(mangoplus.WithAutoRegister(nil)); err == nil {
+	var ctx context.Context
+	if _, err := mangoplus.NewClient(mangoplus.WithAutoRegister(ctx)); err == nil {
 		t.Fatal("WithAutoRegister(nil) accepted, want error")
 	}
 }
