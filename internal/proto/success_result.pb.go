@@ -65,6 +65,7 @@ type SuccessResult struct {
 	//	*SuccessResult_EngageView
 	//	*SuccessResult_HomeViewV6
 	//	*SuccessResult_HomePreviewView
+	//	*SuccessResult_HomePreviewViewV2
 	Data          isSuccessResult_Data `protobuf_oneof:"data"`
 	Languages     *Languages           `protobuf:"bytes,29,opt,name=languages,proto3" json:"languages,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -466,6 +467,15 @@ func (x *SuccessResult) GetHomePreviewView() *HomePreviewView {
 	return nil
 }
 
+func (x *SuccessResult) GetHomePreviewViewV2() *HomePreviewViewV2 {
+	if x != nil {
+		if x, ok := x.Data.(*SuccessResult_HomePreviewViewV2); ok {
+			return x.HomePreviewViewV2
+		}
+	}
+	return nil
+}
+
 func (x *SuccessResult) GetLanguages() *Languages {
 	if x != nil {
 		return x.Languages
@@ -633,6 +643,10 @@ type SuccessResult_HomePreviewView struct {
 	HomePreviewView *HomePreviewView `protobuf:"bytes,48,opt,name=home_preview_view,json=homePreviewView,proto3,oneof"`
 }
 
+type SuccessResult_HomePreviewViewV2 struct {
+	HomePreviewViewV2 *HomePreviewViewV2 `protobuf:"bytes,49,opt,name=home_preview_view_v2,json=homePreviewViewV2,proto3,oneof"`
+}
+
 func (*SuccessResult_RegisterationData) isSuccessResult_Data() {}
 
 func (*SuccessResult_FeaturedTitlesView) isSuccessResult_Data() {}
@@ -711,11 +725,13 @@ func (*SuccessResult_HomeViewV6) isSuccessResult_Data() {}
 
 func (*SuccessResult_HomePreviewView) isSuccessResult_Data() {}
 
+func (*SuccessResult_HomePreviewViewV2) isSuccessResult_Data() {}
+
 var File_success_result_proto protoreflect.FileDescriptor
 
 const file_success_result_proto_rawDesc = "" +
 	"\n" +
-	"\x14success_result.proto\x12\x16jp.co.comic.jump.proto\x1a\x1aall_free_titles_view.proto\x1a\x1call_ticket_titles_view.proto\x1a\x15all_titles_view.proto\x1a\x18all_titles_view_v2.proto\x1a\x17comment_list_view.proto\x1a\x1edownloadable_images_view.proto\x1a\x11engage_view.proto\x1a\x1afavorite_titles_view.proto\x1a\x1afeatured_titles_view.proto\x1a\x1dfeatured_titles_view_v2.proto\x1a\x13feedback_view.proto\x1a\x12history_view.proto\x1a\x17home_preview_view.proto\x1a\x12home_view_v3.proto\x1a\x12home_view_v4.proto\x1a\x12home_view_v6.proto\x1a\x15initial_view_v2.proto\x1a\x1cintroduce_subscription.proto\x1a\x12labeled_view.proto\x1a\x0flanguages.proto\x1a\x12manga_viewer.proto\x1a\x15mpc_status_view.proto\x1a\x1bprofile_settings_view.proto\x1a\x1epublisher_news_list_view.proto\x1a\x15push_token_view.proto\x1a\x18questionnaire_view.proto\x1a\x17registration_data.proto\x1a\x11search_view.proto\x1a service_announcements_view.proto\x1a\x16settings_view_v2.proto\x1a\x1csubscribed_titles_view.proto\x1a\x17subscription_view.proto\x1a\x17title_detail_view.proto\x1a\x18title_ranking_view.proto\x1a\x1btitle_ranking_view_v2.proto\x1a\x18title_updated_view.proto\x1a\x1btitle_updated_view_v2.proto\x1a update_profile_result_view.proto\x1a\x1dupdated_title_list_view.proto\x1a\x16web_home_view_v4.proto\"\x99\x1c\n" +
+	"\x14success_result.proto\x12\x16jp.co.comic.jump.proto\x1a\x1aall_free_titles_view.proto\x1a\x1call_ticket_titles_view.proto\x1a\x15all_titles_view.proto\x1a\x18all_titles_view_v2.proto\x1a\x17comment_list_view.proto\x1a\x1edownloadable_images_view.proto\x1a\x11engage_view.proto\x1a\x1afavorite_titles_view.proto\x1a\x1afeatured_titles_view.proto\x1a\x1dfeatured_titles_view_v2.proto\x1a\x13feedback_view.proto\x1a\x12history_view.proto\x1a\x17home_preview_view.proto\x1a\x1ahome_preview_view_v2.proto\x1a\x12home_view_v3.proto\x1a\x12home_view_v4.proto\x1a\x12home_view_v6.proto\x1a\x15initial_view_v2.proto\x1a\x1cintroduce_subscription.proto\x1a\x12labeled_view.proto\x1a\x0flanguages.proto\x1a\x12manga_viewer.proto\x1a\x15mpc_status_view.proto\x1a\x1bprofile_settings_view.proto\x1a\x1epublisher_news_list_view.proto\x1a\x15push_token_view.proto\x1a\x18questionnaire_view.proto\x1a\x17registration_data.proto\x1a\x11search_view.proto\x1a service_announcements_view.proto\x1a\x16settings_view_v2.proto\x1a\x1csubscribed_titles_view.proto\x1a\x17subscription_view.proto\x1a\x17title_detail_view.proto\x1a\x18title_ranking_view.proto\x1a\x1btitle_ranking_view_v2.proto\x1a\x18title_updated_view.proto\x1a\x1btitle_updated_view_v2.proto\x1a update_profile_result_view.proto\x1a\x1dupdated_title_list_view.proto\x1a\x16web_home_view_v4.proto\"\xf7\x1c\n" +
 	"\rSuccessResult\x12.\n" +
 	"\x13is_featured_updated\x18\x01 \x01(\bR\x11isFeaturedUpdated\x12Y\n" +
 	"\x12registeration_data\x18\x02 \x01(\v2(.jp.co.comic.jump.proto.RegistrationDataH\x00R\x11registerationData\x12^\n" +
@@ -762,7 +778,8 @@ const file_success_result_proto_rawDesc = "" +
 	"engageView\x12F\n" +
 	"\fhome_view_v6\x18/ \x01(\v2\".jp.co.comic.jump.proto.HomeViewV6H\x00R\n" +
 	"homeViewV6\x12U\n" +
-	"\x11home_preview_view\x180 \x01(\v2'.jp.co.comic.jump.proto.HomePreviewViewH\x00R\x0fhomePreviewView\x12?\n" +
+	"\x11home_preview_view\x180 \x01(\v2'.jp.co.comic.jump.proto.HomePreviewViewH\x00R\x0fhomePreviewView\x12\\\n" +
+	"\x14home_preview_view_v2\x181 \x01(\v2).jp.co.comic.jump.proto.HomePreviewViewV2H\x00R\x11homePreviewViewV2\x12?\n" +
 	"\tlanguages\x18\x1d \x01(\v2!.jp.co.comic.jump.proto.LanguagesR\tlanguagesB\x06\n" +
 	"\x04datab\x06proto3"
 
@@ -820,7 +837,8 @@ var file_success_result_proto_goTypes = []any{
 	(*EngageView)(nil),               // 37: jp.co.comic.jump.proto.EngageView
 	(*HomeViewV6)(nil),               // 38: jp.co.comic.jump.proto.HomeViewV6
 	(*HomePreviewView)(nil),          // 39: jp.co.comic.jump.proto.HomePreviewView
-	(*Languages)(nil),                // 40: jp.co.comic.jump.proto.Languages
+	(*HomePreviewViewV2)(nil),        // 40: jp.co.comic.jump.proto.HomePreviewViewV2
+	(*Languages)(nil),                // 41: jp.co.comic.jump.proto.Languages
 }
 var file_success_result_proto_depIdxs = []int32{
 	1,  // 0: jp.co.comic.jump.proto.SuccessResult.registeration_data:type_name -> jp.co.comic.jump.proto.RegistrationData
@@ -862,12 +880,13 @@ var file_success_result_proto_depIdxs = []int32{
 	37, // 36: jp.co.comic.jump.proto.SuccessResult.engage_view:type_name -> jp.co.comic.jump.proto.EngageView
 	38, // 37: jp.co.comic.jump.proto.SuccessResult.home_view_v6:type_name -> jp.co.comic.jump.proto.HomeViewV6
 	39, // 38: jp.co.comic.jump.proto.SuccessResult.home_preview_view:type_name -> jp.co.comic.jump.proto.HomePreviewView
-	40, // 39: jp.co.comic.jump.proto.SuccessResult.languages:type_name -> jp.co.comic.jump.proto.Languages
-	40, // [40:40] is the sub-list for method output_type
-	40, // [40:40] is the sub-list for method input_type
-	40, // [40:40] is the sub-list for extension type_name
-	40, // [40:40] is the sub-list for extension extendee
-	0,  // [0:40] is the sub-list for field type_name
+	40, // 39: jp.co.comic.jump.proto.SuccessResult.home_preview_view_v2:type_name -> jp.co.comic.jump.proto.HomePreviewViewV2
+	41, // 40: jp.co.comic.jump.proto.SuccessResult.languages:type_name -> jp.co.comic.jump.proto.Languages
+	41, // [41:41] is the sub-list for method output_type
+	41, // [41:41] is the sub-list for method input_type
+	41, // [41:41] is the sub-list for extension type_name
+	41, // [41:41] is the sub-list for extension extendee
+	0,  // [0:41] is the sub-list for field type_name
 }
 
 func init() { file_success_result_proto_init() }
@@ -888,6 +907,7 @@ func file_success_result_proto_init() {
 	file_feedback_view_proto_init()
 	file_history_view_proto_init()
 	file_home_preview_view_proto_init()
+	file_home_preview_view_v2_proto_init()
 	file_home_view_v3_proto_init()
 	file_home_view_v4_proto_init()
 	file_home_view_v6_proto_init()
@@ -955,6 +975,7 @@ func file_success_result_proto_init() {
 		(*SuccessResult_EngageView)(nil),
 		(*SuccessResult_HomeViewV6)(nil),
 		(*SuccessResult_HomePreviewView)(nil),
+		(*SuccessResult_HomePreviewViewV2)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

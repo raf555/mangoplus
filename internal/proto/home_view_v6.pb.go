@@ -23,11 +23,12 @@ const (
 
 type HomeViewV6 struct {
 	state                protoimpl.MessageState `protogen:"open.v1"`
-	Sections             []*HomeViewV4_Sections `protobuf:"bytes,1,rep,name=sections,proto3" json:"sections,omitempty"`
+	Sections             []*HomeViewV6_Sections `protobuf:"bytes,1,rep,name=sections,proto3" json:"sections,omitempty"`
 	Popup                *Popup                 `protobuf:"bytes,2,opt,name=popup,proto3" json:"popup,omitempty"`
 	DisplayTrackingPopup bool                   `protobuf:"varint,3,opt,name=display_tracking_popup,json=displayTrackingPopup,proto3" json:"display_tracking_popup,omitempty"`
 	UserSubscription     *Subscription          `protobuf:"bytes,4,opt,name=user_subscription,json=userSubscription,proto3" json:"user_subscription,omitempty"`
 	ServiceAnnouncements []*ServiceAnnouncement `protobuf:"bytes,5,rep,name=service_announcements,json=serviceAnnouncements,proto3" json:"service_announcements,omitempty"`
+	AvailableLanguages   []*AvailableLanguages  `protobuf:"bytes,6,rep,name=available_languages,json=availableLanguages,proto3" json:"available_languages,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -62,7 +63,7 @@ func (*HomeViewV6) Descriptor() ([]byte, []int) {
 	return file_home_view_v6_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *HomeViewV6) GetSections() []*HomeViewV4_Sections {
+func (x *HomeViewV6) GetSections() []*HomeViewV6_Sections {
 	if x != nil {
 		return x.Sections
 	}
@@ -93,6 +94,13 @@ func (x *HomeViewV6) GetUserSubscription() *Subscription {
 func (x *HomeViewV6) GetServiceAnnouncements() []*ServiceAnnouncement {
 	if x != nil {
 		return x.ServiceAnnouncements
+	}
+	return nil
+}
+
+func (x *HomeViewV6) GetAvailableLanguages() []*AvailableLanguages {
+	if x != nil {
+		return x.AvailableLanguages
 	}
 	return nil
 }
@@ -148,7 +156,7 @@ func (x *HomeViewV6_Sections) GetSection() isHomeViewV6_Sections_Section {
 	return nil
 }
 
-func (x *HomeViewV6_Sections) GetWeeklySection() *HomeViewV4_WeeklySection {
+func (x *HomeViewV6_Sections) GetWeeklySection() *HomeViewV6_WeeklySection {
 	if x != nil {
 		if x, ok := x.Section.(*HomeViewV6_Sections_WeeklySection); ok {
 			return x.WeeklySection
@@ -157,7 +165,7 @@ func (x *HomeViewV6_Sections) GetWeeklySection() *HomeViewV4_WeeklySection {
 	return nil
 }
 
-func (x *HomeViewV6_Sections) GetRankingSection() *HomeViewV4_RankingSection {
+func (x *HomeViewV6_Sections) GetRankingSection() *HomeViewV6_RankingSection {
 	if x != nil {
 		if x, ok := x.Section.(*HomeViewV6_Sections_RankingSection); ok {
 			return x.RankingSection
@@ -166,7 +174,7 @@ func (x *HomeViewV6_Sections) GetRankingSection() *HomeViewV4_RankingSection {
 	return nil
 }
 
-func (x *HomeViewV6_Sections) GetPreviewSection() *HomeViewV4_PreviewSection {
+func (x *HomeViewV6_Sections) GetPreviewSection() *HomeViewV6_PreviewSection {
 	if x != nil {
 		if x, ok := x.Section.(*HomeViewV6_Sections_PreviewSection); ok {
 			return x.PreviewSection
@@ -175,7 +183,7 @@ func (x *HomeViewV6_Sections) GetPreviewSection() *HomeViewV4_PreviewSection {
 	return nil
 }
 
-func (x *HomeViewV6_Sections) GetTitleListSection() *HomeViewV4_TitleListSection {
+func (x *HomeViewV6_Sections) GetTitleListSection() *HomeViewV6_TitleListSection {
 	if x != nil {
 		if x, ok := x.Section.(*HomeViewV6_Sections_TitleListSection); ok {
 			return x.TitleListSection
@@ -184,7 +192,7 @@ func (x *HomeViewV6_Sections) GetTitleListSection() *HomeViewV4_TitleListSection
 	return nil
 }
 
-func (x *HomeViewV6_Sections) GetBannerSection() *HomeViewV4_BannerSection {
+func (x *HomeViewV6_Sections) GetBannerSection() *HomeViewV6_BannerSection {
 	if x != nil {
 		if x, ok := x.Section.(*HomeViewV6_Sections_BannerSection); ok {
 			return x.BannerSection
@@ -198,23 +206,23 @@ type isHomeViewV6_Sections_Section interface {
 }
 
 type HomeViewV6_Sections_WeeklySection struct {
-	WeeklySection *HomeViewV4_WeeklySection `protobuf:"bytes,1,opt,name=weekly_section,json=weeklySection,proto3,oneof"`
+	WeeklySection *HomeViewV6_WeeklySection `protobuf:"bytes,1,opt,name=weekly_section,json=weeklySection,proto3,oneof"`
 }
 
 type HomeViewV6_Sections_RankingSection struct {
-	RankingSection *HomeViewV4_RankingSection `protobuf:"bytes,2,opt,name=ranking_section,json=rankingSection,proto3,oneof"`
+	RankingSection *HomeViewV6_RankingSection `protobuf:"bytes,2,opt,name=ranking_section,json=rankingSection,proto3,oneof"`
 }
 
 type HomeViewV6_Sections_PreviewSection struct {
-	PreviewSection *HomeViewV4_PreviewSection `protobuf:"bytes,3,opt,name=preview_section,json=previewSection,proto3,oneof"`
+	PreviewSection *HomeViewV6_PreviewSection `protobuf:"bytes,3,opt,name=preview_section,json=previewSection,proto3,oneof"`
 }
 
 type HomeViewV6_Sections_TitleListSection struct {
-	TitleListSection *HomeViewV4_TitleListSection `protobuf:"bytes,4,opt,name=title_list_section,json=titleListSection,proto3,oneof"`
+	TitleListSection *HomeViewV6_TitleListSection `protobuf:"bytes,4,opt,name=title_list_section,json=titleListSection,proto3,oneof"`
 }
 
 type HomeViewV6_Sections_BannerSection struct {
-	BannerSection *HomeViewV4_BannerSection `protobuf:"bytes,5,opt,name=banner_section,json=bannerSection,proto3,oneof"`
+	BannerSection *HomeViewV6_BannerSection `protobuf:"bytes,5,opt,name=banner_section,json=bannerSection,proto3,oneof"`
 }
 
 func (*HomeViewV6_Sections_WeeklySection) isHomeViewV6_Sections_Section() {}
@@ -229,7 +237,7 @@ func (*HomeViewV6_Sections_BannerSection) isHomeViewV6_Sections_Section() {}
 
 type HomeViewV6_WeeklySection struct {
 	state         protoimpl.MessageState                    `protogen:"open.v1"`
-	Contents      []*HomeViewV4_WeeklySection_WeeklyContent `protobuf:"bytes,1,rep,name=contents,proto3" json:"contents,omitempty"`
+	Contents      []*HomeViewV6_WeeklySection_WeeklyContent `protobuf:"bytes,1,rep,name=contents,proto3" json:"contents,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -264,7 +272,7 @@ func (*HomeViewV6_WeeklySection) Descriptor() ([]byte, []int) {
 	return file_home_view_v6_proto_rawDescGZIP(), []int{0, 1}
 }
 
-func (x *HomeViewV6_WeeklySection) GetContents() []*HomeViewV4_WeeklySection_WeeklyContent {
+func (x *HomeViewV6_WeeklySection) GetContents() []*HomeViewV6_WeeklySection_WeeklyContent {
 	if x != nil {
 		return x.Contents
 	}
@@ -273,7 +281,7 @@ func (x *HomeViewV6_WeeklySection) GetContents() []*HomeViewV4_WeeklySection_Wee
 
 type HomeViewV6_RankingSection struct {
 	state         protoimpl.MessageState                  `protogen:"open.v1"`
-	RankingTabs   []*HomeViewV4_RankingSection_RankingTab `protobuf:"bytes,1,rep,name=ranking_tabs,json=rankingTabs,proto3" json:"ranking_tabs,omitempty"`
+	RankingTabs   []*HomeViewV6_RankingSection_RankingTab `protobuf:"bytes,1,rep,name=ranking_tabs,json=rankingTabs,proto3" json:"ranking_tabs,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -308,7 +316,7 @@ func (*HomeViewV6_RankingSection) Descriptor() ([]byte, []int) {
 	return file_home_view_v6_proto_rawDescGZIP(), []int{0, 2}
 }
 
-func (x *HomeViewV6_RankingSection) GetRankingTabs() []*HomeViewV4_RankingSection_RankingTab {
+func (x *HomeViewV6_RankingSection) GetRankingTabs() []*HomeViewV6_RankingSection_RankingTab {
 	if x != nil {
 		return x.RankingTabs
 	}
@@ -318,7 +326,7 @@ func (x *HomeViewV6_RankingSection) GetRankingTabs() []*HomeViewV4_RankingSectio
 type HomeViewV6_PreviewSection struct {
 	state         protoimpl.MessageState                  `protogen:"open.v1"`
 	SectionName   string                                  `protobuf:"bytes,1,opt,name=section_name,json=sectionName,proto3" json:"section_name,omitempty"`
-	PreviewTabs   []*HomeViewV4_PreviewSection_PreviewTab `protobuf:"bytes,2,rep,name=preview_tabs,json=previewTabs,proto3" json:"preview_tabs,omitempty"`
+	PreviewTabs   []*HomeViewV6_PreviewSection_PreviewTab `protobuf:"bytes,2,rep,name=preview_tabs,json=previewTabs,proto3" json:"preview_tabs,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -360,7 +368,7 @@ func (x *HomeViewV6_PreviewSection) GetSectionName() string {
 	return ""
 }
 
-func (x *HomeViewV6_PreviewSection) GetPreviewTabs() []*HomeViewV4_PreviewSection_PreviewTab {
+func (x *HomeViewV6_PreviewSection) GetPreviewTabs() []*HomeViewV6_PreviewSection_PreviewTab {
 	if x != nil {
 		return x.PreviewTabs
 	}
@@ -458,8 +466,8 @@ func (x *HomeViewV6_BannerSection) GetBanners() []*Banner {
 type HomeViewV6_WeeklySection_WeeklyContent struct {
 	state            protoimpl.MessageState                  `protogen:"open.v1"`
 	IsUpdated        bool                                    `protobuf:"varint,1,opt,name=is_updated,json=isUpdated,proto3" json:"is_updated,omitempty"`
-	UpdatedTimeStamp uint32                                  `protobuf:"varint,2,opt,name=updated_time_stamp,json=updatedTimeStamp,proto3" json:"updated_time_stamp,omitempty"`
-	ContentItems     []*HomeViewV4_WeeklySection_ContentItem `protobuf:"bytes,3,rep,name=content_items,json=contentItems,proto3" json:"content_items,omitempty"`
+	UpdatedTimeStamp int64                                   `protobuf:"varint,2,opt,name=updated_time_stamp,json=updatedTimeStamp,proto3" json:"updated_time_stamp,omitempty"`
+	ContentItems     []*HomeViewV6_WeeklySection_ContentItem `protobuf:"bytes,3,rep,name=content_items,json=contentItems,proto3" json:"content_items,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -501,14 +509,14 @@ func (x *HomeViewV6_WeeklySection_WeeklyContent) GetIsUpdated() bool {
 	return false
 }
 
-func (x *HomeViewV6_WeeklySection_WeeklyContent) GetUpdatedTimeStamp() uint32 {
+func (x *HomeViewV6_WeeklySection_WeeklyContent) GetUpdatedTimeStamp() int64 {
 	if x != nil {
 		return x.UpdatedTimeStamp
 	}
 	return 0
 }
 
-func (x *HomeViewV6_WeeklySection_WeeklyContent) GetContentItems() []*HomeViewV4_WeeklySection_ContentItem {
+func (x *HomeViewV6_WeeklySection_WeeklyContent) GetContentItems() []*HomeViewV6_WeeklySection_ContentItem {
 	if x != nil {
 		return x.ContentItems
 	}
@@ -584,7 +592,7 @@ func (x *HomeViewV6_WeeklySection_ContentItem) GetMvBanner() *HomeViewV6_WeeklyS
 	return nil
 }
 
-func (x *HomeViewV6_WeeklySection_ContentItem) GetTitleGroup() *HomeViewV4_WeeklySection_TitleGroup {
+func (x *HomeViewV6_WeeklySection_ContentItem) GetTitleGroup() *HomeViewV6_WeeklySection_TitleGroup {
 	if x != nil {
 		if x, ok := x.Content.(*HomeViewV6_WeeklySection_ContentItem_TitleGroup); ok {
 			return x.TitleGroup
@@ -593,7 +601,7 @@ func (x *HomeViewV6_WeeklySection_ContentItem) GetTitleGroup() *HomeViewV4_Weekl
 	return nil
 }
 
-func (x *HomeViewV6_WeeklySection_ContentItem) GetCarouselBanners() *HomeViewV4_WeeklySection_CarouselBanner {
+func (x *HomeViewV6_WeeklySection_ContentItem) GetCarouselBanners() *HomeViewV6_WeeklySection_CarouselBanner {
 	if x != nil {
 		if x, ok := x.Content.(*HomeViewV6_WeeklySection_ContentItem_CarouselBanners); ok {
 			return x.CarouselBanners
@@ -602,7 +610,7 @@ func (x *HomeViewV6_WeeklySection_ContentItem) GetCarouselBanners() *HomeViewV4_
 	return nil
 }
 
-func (x *HomeViewV6_WeeklySection_ContentItem) GetMinorLanguageBanner() *HomeViewV4_WeeklySection_MinorLanguageBanner {
+func (x *HomeViewV6_WeeklySection_ContentItem) GetMinorLanguageBanner() *HomeViewV6_WeeklySection_MinorLanguageBanner {
 	if x != nil {
 		if x, ok := x.Content.(*HomeViewV6_WeeklySection_ContentItem_MinorLanguageBanner); ok {
 			return x.MinorLanguageBanner
@@ -624,15 +632,15 @@ type HomeViewV6_WeeklySection_ContentItem_MvBanner struct {
 }
 
 type HomeViewV6_WeeklySection_ContentItem_TitleGroup struct {
-	TitleGroup *HomeViewV4_WeeklySection_TitleGroup `protobuf:"bytes,3,opt,name=title_group,json=titleGroup,proto3,oneof"`
+	TitleGroup *HomeViewV6_WeeklySection_TitleGroup `protobuf:"bytes,3,opt,name=title_group,json=titleGroup,proto3,oneof"`
 }
 
 type HomeViewV6_WeeklySection_ContentItem_CarouselBanners struct {
-	CarouselBanners *HomeViewV4_WeeklySection_CarouselBanner `protobuf:"bytes,4,opt,name=carousel_banners,json=carouselBanners,proto3,oneof"`
+	CarouselBanners *HomeViewV6_WeeklySection_CarouselBanner `protobuf:"bytes,4,opt,name=carousel_banners,json=carouselBanners,proto3,oneof"`
 }
 
 type HomeViewV6_WeeklySection_ContentItem_MinorLanguageBanner struct {
-	MinorLanguageBanner *HomeViewV4_WeeklySection_MinorLanguageBanner `protobuf:"bytes,5,opt,name=minor_language_banner,json=minorLanguageBanner,proto3,oneof"`
+	MinorLanguageBanner *HomeViewV6_WeeklySection_MinorLanguageBanner `protobuf:"bytes,5,opt,name=minor_language_banner,json=minorLanguageBanner,proto3,oneof"`
 }
 
 func (*HomeViewV6_WeeklySection_ContentItem_PrBanner) isHomeViewV6_WeeklySection_ContentItem_Content() {
@@ -942,35 +950,36 @@ var File_home_view_v6_proto protoreflect.FileDescriptor
 
 const file_home_view_v6_proto_rawDesc = "" +
 	"\n" +
-	"\x12home_view_v6.proto\x12\x16jp.co.comic.jump.proto\x1a\fbanner.proto\x1a\x12home_view_v4.proto\x1a\x0flanguages.proto\x1a\vpopup.proto\x1a\x16ranking_tab_type.proto\x1a\x1aservice_announcement.proto\x1a\x12subscription.proto\x1a\x10title_list.proto\x1a\x16title_list_group.proto\x1a\x19updated_title_group.proto\x1a\x16web_home_view_v4.proto\"\x8a\x16\n" +
+	"\x12home_view_v6.proto\x12\x16jp.co.comic.jump.proto\x1a\fbanner.proto\x1a\x0flanguages.proto\x1a\vpopup.proto\x1a\x16ranking_tab_type.proto\x1a\x1aservice_announcement.proto\x1a\x12subscription.proto\x1a\x10title_list.proto\x1a\x16title_list_group.proto\x1a\x19updated_title_group.proto\x1a\x16web_home_view_v4.proto\"\xe7\x16\n" +
 	"\n" +
 	"HomeViewV6\x12G\n" +
-	"\bsections\x18\x01 \x03(\v2+.jp.co.comic.jump.proto.HomeViewV4.SectionsR\bsections\x123\n" +
+	"\bsections\x18\x01 \x03(\v2+.jp.co.comic.jump.proto.HomeViewV6.SectionsR\bsections\x123\n" +
 	"\x05popup\x18\x02 \x01(\v2\x1d.jp.co.comic.jump.proto.PopupR\x05popup\x124\n" +
 	"\x16display_tracking_popup\x18\x03 \x01(\bR\x14displayTrackingPopup\x12Q\n" +
 	"\x11user_subscription\x18\x04 \x01(\v2$.jp.co.comic.jump.proto.SubscriptionR\x10userSubscription\x12`\n" +
-	"\x15service_announcements\x18\x05 \x03(\v2+.jp.co.comic.jump.proto.ServiceAnnouncementR\x14serviceAnnouncements\x1a\xec\x03\n" +
+	"\x15service_announcements\x18\x05 \x03(\v2+.jp.co.comic.jump.proto.ServiceAnnouncementR\x14serviceAnnouncements\x12[\n" +
+	"\x13available_languages\x18\x06 \x03(\v2*.jp.co.comic.jump.proto.AvailableLanguagesR\x12availableLanguages\x1a\xec\x03\n" +
 	"\bSections\x12Y\n" +
-	"\x0eweekly_section\x18\x01 \x01(\v20.jp.co.comic.jump.proto.HomeViewV4.WeeklySectionH\x00R\rweeklySection\x12\\\n" +
-	"\x0franking_section\x18\x02 \x01(\v21.jp.co.comic.jump.proto.HomeViewV4.RankingSectionH\x00R\x0erankingSection\x12\\\n" +
-	"\x0fpreview_section\x18\x03 \x01(\v21.jp.co.comic.jump.proto.HomeViewV4.PreviewSectionH\x00R\x0epreviewSection\x12c\n" +
-	"\x12title_list_section\x18\x04 \x01(\v23.jp.co.comic.jump.proto.HomeViewV4.TitleListSectionH\x00R\x10titleListSection\x12Y\n" +
-	"\x0ebanner_section\x18\x05 \x01(\v20.jp.co.comic.jump.proto.HomeViewV4.BannerSectionH\x00R\rbannerSectionB\t\n" +
+	"\x0eweekly_section\x18\x01 \x01(\v20.jp.co.comic.jump.proto.HomeViewV6.WeeklySectionH\x00R\rweeklySection\x12\\\n" +
+	"\x0franking_section\x18\x02 \x01(\v21.jp.co.comic.jump.proto.HomeViewV6.RankingSectionH\x00R\x0erankingSection\x12\\\n" +
+	"\x0fpreview_section\x18\x03 \x01(\v21.jp.co.comic.jump.proto.HomeViewV6.PreviewSectionH\x00R\x0epreviewSection\x12c\n" +
+	"\x12title_list_section\x18\x04 \x01(\v23.jp.co.comic.jump.proto.HomeViewV6.TitleListSectionH\x00R\x10titleListSection\x12Y\n" +
+	"\x0ebanner_section\x18\x05 \x01(\v20.jp.co.comic.jump.proto.HomeViewV6.BannerSectionH\x00R\rbannerSectionB\t\n" +
 	"\asection\x1a\xb2\t\n" +
 	"\rWeeklySection\x12Z\n" +
-	"\bcontents\x18\x01 \x03(\v2>.jp.co.comic.jump.proto.HomeViewV4.WeeklySection.WeeklyContentR\bcontents\x1a\xbf\x01\n" +
+	"\bcontents\x18\x01 \x03(\v2>.jp.co.comic.jump.proto.HomeViewV6.WeeklySection.WeeklyContentR\bcontents\x1a\xbf\x01\n" +
 	"\rWeeklyContent\x12\x1d\n" +
 	"\n" +
 	"is_updated\x18\x01 \x01(\bR\tisUpdated\x12,\n" +
-	"\x12updated_time_stamp\x18\x02 \x01(\rR\x10updatedTimeStamp\x12a\n" +
-	"\rcontent_items\x18\x03 \x03(\v2<.jp.co.comic.jump.proto.HomeViewV4.WeeklySection.ContentItemR\fcontentItems\x1a\xfb\x03\n" +
+	"\x12updated_time_stamp\x18\x02 \x01(\x03R\x10updatedTimeStamp\x12a\n" +
+	"\rcontent_items\x18\x03 \x03(\v2<.jp.co.comic.jump.proto.HomeViewV6.WeeklySection.ContentItemR\fcontentItems\x1a\xfb\x03\n" +
 	"\vContentItem\x12=\n" +
 	"\tpr_banner\x18\x01 \x01(\v2\x1e.jp.co.comic.jump.proto.BannerH\x00R\bprBanner\x12X\n" +
 	"\tmv_banner\x18\x02 \x01(\v29.jp.co.comic.jump.proto.HomeViewV6.WeeklySection.MVBannerH\x00R\bmvBanner\x12^\n" +
-	"\vtitle_group\x18\x03 \x01(\v2;.jp.co.comic.jump.proto.HomeViewV4.WeeklySection.TitleGroupH\x00R\n" +
+	"\vtitle_group\x18\x03 \x01(\v2;.jp.co.comic.jump.proto.HomeViewV6.WeeklySection.TitleGroupH\x00R\n" +
 	"titleGroup\x12l\n" +
-	"\x10carousel_banners\x18\x04 \x01(\v2?.jp.co.comic.jump.proto.HomeViewV4.WeeklySection.CarouselBannerH\x00R\x0fcarouselBanners\x12z\n" +
-	"\x15minor_language_banner\x18\x05 \x01(\v2D.jp.co.comic.jump.proto.HomeViewV4.WeeklySection.MinorLanguageBannerH\x00R\x13minorLanguageBannerB\t\n" +
+	"\x10carousel_banners\x18\x04 \x01(\v2?.jp.co.comic.jump.proto.HomeViewV6.WeeklySection.CarouselBannerH\x00R\x0fcarouselBanners\x12z\n" +
+	"\x15minor_language_banner\x18\x05 \x01(\v2D.jp.co.comic.jump.proto.HomeViewV6.WeeklySection.MinorLanguageBannerH\x00R\x13minorLanguageBannerB\t\n" +
 	"\acontent\x1av\n" +
 	"\bMVBanner\x12\x1b\n" +
 	"\timage_url\x18\x01 \x01(\tR\bimageUrl\x12M\n" +
@@ -983,14 +992,14 @@ const file_home_view_v6_proto_rawDesc = "" +
 	"\x13MinorLanguageBanner\x12M\n" +
 	"\ftitle_groups\x18\x01 \x03(\v2*.jp.co.comic.jump.proto.OriginalTitleGroupR\vtitleGroups\x1a\x93\x02\n" +
 	"\x0eRankingSection\x12_\n" +
-	"\franking_tabs\x18\x01 \x03(\v2<.jp.co.comic.jump.proto.HomeViewV4.RankingSection.RankingTabR\vrankingTabs\x1a\x9f\x01\n" +
+	"\franking_tabs\x18\x01 \x03(\v2<.jp.co.comic.jump.proto.HomeViewV6.RankingSection.RankingTabR\vrankingTabs\x1a\x9f\x01\n" +
 	"\n" +
 	"RankingTab\x12A\n" +
 	"\btab_type\x18\x01 \x01(\x0e2&.jp.co.comic.jump.proto.RankingTabTypeR\atabType\x12N\n" +
 	"\rranked_titles\x18\x02 \x03(\v2).jp.co.comic.jump.proto.TitleRankingGroupR\frankedTitles\x1a\xb7\x02\n" +
 	"\x0ePreviewSection\x12!\n" +
 	"\fsection_name\x18\x01 \x01(\tR\vsectionName\x12_\n" +
-	"\fpreview_tabs\x18\x02 \x03(\v2<.jp.co.comic.jump.proto.HomeViewV4.PreviewSection.PreviewTabR\vpreviewTabs\x1a\xa0\x01\n" +
+	"\fpreview_tabs\x18\x02 \x03(\v2<.jp.co.comic.jump.proto.HomeViewV6.PreviewSection.PreviewTabR\vpreviewTabs\x1a\xa0\x01\n" +
 	"\n" +
 	"PreviewTab\x12;\n" +
 	"\btab_type\x18\x01 \x01(\x0e2 .jp.co.comic.jump.proto.LanguageR\atabType\x12U\n" +
@@ -1030,64 +1039,53 @@ var file_home_view_v6_proto_goTypes = []any{
 	(*HomeViewV6_WeeklySection_MinorLanguageBanner)(nil), // 12: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.MinorLanguageBanner
 	(*HomeViewV6_RankingSection_RankingTab)(nil),         // 13: jp.co.comic.jump.proto.HomeViewV6.RankingSection.RankingTab
 	(*HomeViewV6_PreviewSection_PreviewTab)(nil),         // 14: jp.co.comic.jump.proto.HomeViewV6.PreviewSection.PreviewTab
-	(*HomeViewV4_Sections)(nil),                          // 15: jp.co.comic.jump.proto.HomeViewV4.Sections
-	(*Popup)(nil),                                        // 16: jp.co.comic.jump.proto.Popup
-	(*Subscription)(nil),                                 // 17: jp.co.comic.jump.proto.Subscription
-	(*ServiceAnnouncement)(nil),                          // 18: jp.co.comic.jump.proto.ServiceAnnouncement
-	(*HomeViewV4_WeeklySection)(nil),                     // 19: jp.co.comic.jump.proto.HomeViewV4.WeeklySection
-	(*HomeViewV4_RankingSection)(nil),                    // 20: jp.co.comic.jump.proto.HomeViewV4.RankingSection
-	(*HomeViewV4_PreviewSection)(nil),                    // 21: jp.co.comic.jump.proto.HomeViewV4.PreviewSection
-	(*HomeViewV4_TitleListSection)(nil),                  // 22: jp.co.comic.jump.proto.HomeViewV4.TitleListSection
-	(*HomeViewV4_BannerSection)(nil),                     // 23: jp.co.comic.jump.proto.HomeViewV4.BannerSection
-	(*HomeViewV4_WeeklySection_WeeklyContent)(nil),       // 24: jp.co.comic.jump.proto.HomeViewV4.WeeklySection.WeeklyContent
-	(*HomeViewV4_RankingSection_RankingTab)(nil),         // 25: jp.co.comic.jump.proto.HomeViewV4.RankingSection.RankingTab
-	(*HomeViewV4_PreviewSection_PreviewTab)(nil),         // 26: jp.co.comic.jump.proto.HomeViewV4.PreviewSection.PreviewTab
-	(*TitleList)(nil),                                    // 27: jp.co.comic.jump.proto.TitleList
-	(*Banner)(nil),                                       // 28: jp.co.comic.jump.proto.Banner
-	(*HomeViewV4_WeeklySection_ContentItem)(nil),         // 29: jp.co.comic.jump.proto.HomeViewV4.WeeklySection.ContentItem
-	(*HomeViewV4_WeeklySection_TitleGroup)(nil),          // 30: jp.co.comic.jump.proto.HomeViewV4.WeeklySection.TitleGroup
-	(*HomeViewV4_WeeklySection_CarouselBanner)(nil),      // 31: jp.co.comic.jump.proto.HomeViewV4.WeeklySection.CarouselBanner
-	(*HomeViewV4_WeeklySection_MinorLanguageBanner)(nil), // 32: jp.co.comic.jump.proto.HomeViewV4.WeeklySection.MinorLanguageBanner
-	(*OriginalTitleGroup)(nil),                           // 33: jp.co.comic.jump.proto.OriginalTitleGroup
-	(RankingTabType)(0),                                  // 34: jp.co.comic.jump.proto.RankingTabType
-	(*TitleRankingGroup)(nil),                            // 35: jp.co.comic.jump.proto.TitleRankingGroup
-	(Language)(0),                                        // 36: jp.co.comic.jump.proto.Language
-	(*ChapterPageList)(nil),                              // 37: jp.co.comic.jump.proto.ChapterPageList
+	(*Popup)(nil),               // 15: jp.co.comic.jump.proto.Popup
+	(*Subscription)(nil),        // 16: jp.co.comic.jump.proto.Subscription
+	(*ServiceAnnouncement)(nil), // 17: jp.co.comic.jump.proto.ServiceAnnouncement
+	(*AvailableLanguages)(nil),  // 18: jp.co.comic.jump.proto.AvailableLanguages
+	(*TitleList)(nil),           // 19: jp.co.comic.jump.proto.TitleList
+	(*Banner)(nil),              // 20: jp.co.comic.jump.proto.Banner
+	(*OriginalTitleGroup)(nil),  // 21: jp.co.comic.jump.proto.OriginalTitleGroup
+	(RankingTabType)(0),         // 22: jp.co.comic.jump.proto.RankingTabType
+	(*TitleRankingGroup)(nil),   // 23: jp.co.comic.jump.proto.TitleRankingGroup
+	(Language)(0),               // 24: jp.co.comic.jump.proto.Language
+	(*ChapterPageList)(nil),     // 25: jp.co.comic.jump.proto.ChapterPageList
 }
 var file_home_view_v6_proto_depIdxs = []int32{
-	15, // 0: jp.co.comic.jump.proto.HomeViewV6.sections:type_name -> jp.co.comic.jump.proto.HomeViewV4.Sections
-	16, // 1: jp.co.comic.jump.proto.HomeViewV6.popup:type_name -> jp.co.comic.jump.proto.Popup
-	17, // 2: jp.co.comic.jump.proto.HomeViewV6.user_subscription:type_name -> jp.co.comic.jump.proto.Subscription
-	18, // 3: jp.co.comic.jump.proto.HomeViewV6.service_announcements:type_name -> jp.co.comic.jump.proto.ServiceAnnouncement
-	19, // 4: jp.co.comic.jump.proto.HomeViewV6.Sections.weekly_section:type_name -> jp.co.comic.jump.proto.HomeViewV4.WeeklySection
-	20, // 5: jp.co.comic.jump.proto.HomeViewV6.Sections.ranking_section:type_name -> jp.co.comic.jump.proto.HomeViewV4.RankingSection
-	21, // 6: jp.co.comic.jump.proto.HomeViewV6.Sections.preview_section:type_name -> jp.co.comic.jump.proto.HomeViewV4.PreviewSection
-	22, // 7: jp.co.comic.jump.proto.HomeViewV6.Sections.title_list_section:type_name -> jp.co.comic.jump.proto.HomeViewV4.TitleListSection
-	23, // 8: jp.co.comic.jump.proto.HomeViewV6.Sections.banner_section:type_name -> jp.co.comic.jump.proto.HomeViewV4.BannerSection
-	24, // 9: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.contents:type_name -> jp.co.comic.jump.proto.HomeViewV4.WeeklySection.WeeklyContent
-	25, // 10: jp.co.comic.jump.proto.HomeViewV6.RankingSection.ranking_tabs:type_name -> jp.co.comic.jump.proto.HomeViewV4.RankingSection.RankingTab
-	26, // 11: jp.co.comic.jump.proto.HomeViewV6.PreviewSection.preview_tabs:type_name -> jp.co.comic.jump.proto.HomeViewV4.PreviewSection.PreviewTab
-	27, // 12: jp.co.comic.jump.proto.HomeViewV6.TitleListSection.title_list:type_name -> jp.co.comic.jump.proto.TitleList
-	28, // 13: jp.co.comic.jump.proto.HomeViewV6.BannerSection.banners:type_name -> jp.co.comic.jump.proto.Banner
-	29, // 14: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.WeeklyContent.content_items:type_name -> jp.co.comic.jump.proto.HomeViewV4.WeeklySection.ContentItem
-	28, // 15: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.ContentItem.pr_banner:type_name -> jp.co.comic.jump.proto.Banner
-	9,  // 16: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.ContentItem.mv_banner:type_name -> jp.co.comic.jump.proto.HomeViewV6.WeeklySection.MVBanner
-	30, // 17: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.ContentItem.title_group:type_name -> jp.co.comic.jump.proto.HomeViewV4.WeeklySection.TitleGroup
-	31, // 18: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.ContentItem.carousel_banners:type_name -> jp.co.comic.jump.proto.HomeViewV4.WeeklySection.CarouselBanner
-	32, // 19: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.ContentItem.minor_language_banner:type_name -> jp.co.comic.jump.proto.HomeViewV4.WeeklySection.MinorLanguageBanner
-	33, // 20: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.MVBanner.title_groups:type_name -> jp.co.comic.jump.proto.OriginalTitleGroup
-	33, // 21: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.TitleGroup.title_groups:type_name -> jp.co.comic.jump.proto.OriginalTitleGroup
-	28, // 22: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.CarouselBanner.banners:type_name -> jp.co.comic.jump.proto.Banner
-	33, // 23: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.MinorLanguageBanner.title_groups:type_name -> jp.co.comic.jump.proto.OriginalTitleGroup
-	34, // 24: jp.co.comic.jump.proto.HomeViewV6.RankingSection.RankingTab.tab_type:type_name -> jp.co.comic.jump.proto.RankingTabType
-	35, // 25: jp.co.comic.jump.proto.HomeViewV6.RankingSection.RankingTab.ranked_titles:type_name -> jp.co.comic.jump.proto.TitleRankingGroup
-	36, // 26: jp.co.comic.jump.proto.HomeViewV6.PreviewSection.PreviewTab.tab_type:type_name -> jp.co.comic.jump.proto.Language
-	37, // 27: jp.co.comic.jump.proto.HomeViewV6.PreviewSection.PreviewTab.chapter_pages_list:type_name -> jp.co.comic.jump.proto.ChapterPageList
-	28, // [28:28] is the sub-list for method output_type
-	28, // [28:28] is the sub-list for method input_type
-	28, // [28:28] is the sub-list for extension type_name
-	28, // [28:28] is the sub-list for extension extendee
-	0,  // [0:28] is the sub-list for field type_name
+	1,  // 0: jp.co.comic.jump.proto.HomeViewV6.sections:type_name -> jp.co.comic.jump.proto.HomeViewV6.Sections
+	15, // 1: jp.co.comic.jump.proto.HomeViewV6.popup:type_name -> jp.co.comic.jump.proto.Popup
+	16, // 2: jp.co.comic.jump.proto.HomeViewV6.user_subscription:type_name -> jp.co.comic.jump.proto.Subscription
+	17, // 3: jp.co.comic.jump.proto.HomeViewV6.service_announcements:type_name -> jp.co.comic.jump.proto.ServiceAnnouncement
+	18, // 4: jp.co.comic.jump.proto.HomeViewV6.available_languages:type_name -> jp.co.comic.jump.proto.AvailableLanguages
+	2,  // 5: jp.co.comic.jump.proto.HomeViewV6.Sections.weekly_section:type_name -> jp.co.comic.jump.proto.HomeViewV6.WeeklySection
+	3,  // 6: jp.co.comic.jump.proto.HomeViewV6.Sections.ranking_section:type_name -> jp.co.comic.jump.proto.HomeViewV6.RankingSection
+	4,  // 7: jp.co.comic.jump.proto.HomeViewV6.Sections.preview_section:type_name -> jp.co.comic.jump.proto.HomeViewV6.PreviewSection
+	5,  // 8: jp.co.comic.jump.proto.HomeViewV6.Sections.title_list_section:type_name -> jp.co.comic.jump.proto.HomeViewV6.TitleListSection
+	6,  // 9: jp.co.comic.jump.proto.HomeViewV6.Sections.banner_section:type_name -> jp.co.comic.jump.proto.HomeViewV6.BannerSection
+	7,  // 10: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.contents:type_name -> jp.co.comic.jump.proto.HomeViewV6.WeeklySection.WeeklyContent
+	13, // 11: jp.co.comic.jump.proto.HomeViewV6.RankingSection.ranking_tabs:type_name -> jp.co.comic.jump.proto.HomeViewV6.RankingSection.RankingTab
+	14, // 12: jp.co.comic.jump.proto.HomeViewV6.PreviewSection.preview_tabs:type_name -> jp.co.comic.jump.proto.HomeViewV6.PreviewSection.PreviewTab
+	19, // 13: jp.co.comic.jump.proto.HomeViewV6.TitleListSection.title_list:type_name -> jp.co.comic.jump.proto.TitleList
+	20, // 14: jp.co.comic.jump.proto.HomeViewV6.BannerSection.banners:type_name -> jp.co.comic.jump.proto.Banner
+	8,  // 15: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.WeeklyContent.content_items:type_name -> jp.co.comic.jump.proto.HomeViewV6.WeeklySection.ContentItem
+	20, // 16: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.ContentItem.pr_banner:type_name -> jp.co.comic.jump.proto.Banner
+	9,  // 17: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.ContentItem.mv_banner:type_name -> jp.co.comic.jump.proto.HomeViewV6.WeeklySection.MVBanner
+	10, // 18: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.ContentItem.title_group:type_name -> jp.co.comic.jump.proto.HomeViewV6.WeeklySection.TitleGroup
+	11, // 19: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.ContentItem.carousel_banners:type_name -> jp.co.comic.jump.proto.HomeViewV6.WeeklySection.CarouselBanner
+	12, // 20: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.ContentItem.minor_language_banner:type_name -> jp.co.comic.jump.proto.HomeViewV6.WeeklySection.MinorLanguageBanner
+	21, // 21: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.MVBanner.title_groups:type_name -> jp.co.comic.jump.proto.OriginalTitleGroup
+	21, // 22: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.TitleGroup.title_groups:type_name -> jp.co.comic.jump.proto.OriginalTitleGroup
+	20, // 23: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.CarouselBanner.banners:type_name -> jp.co.comic.jump.proto.Banner
+	21, // 24: jp.co.comic.jump.proto.HomeViewV6.WeeklySection.MinorLanguageBanner.title_groups:type_name -> jp.co.comic.jump.proto.OriginalTitleGroup
+	22, // 25: jp.co.comic.jump.proto.HomeViewV6.RankingSection.RankingTab.tab_type:type_name -> jp.co.comic.jump.proto.RankingTabType
+	23, // 26: jp.co.comic.jump.proto.HomeViewV6.RankingSection.RankingTab.ranked_titles:type_name -> jp.co.comic.jump.proto.TitleRankingGroup
+	24, // 27: jp.co.comic.jump.proto.HomeViewV6.PreviewSection.PreviewTab.tab_type:type_name -> jp.co.comic.jump.proto.Language
+	25, // 28: jp.co.comic.jump.proto.HomeViewV6.PreviewSection.PreviewTab.chapter_pages_list:type_name -> jp.co.comic.jump.proto.ChapterPageList
+	29, // [29:29] is the sub-list for method output_type
+	29, // [29:29] is the sub-list for method input_type
+	29, // [29:29] is the sub-list for extension type_name
+	29, // [29:29] is the sub-list for extension extendee
+	0,  // [0:29] is the sub-list for field type_name
 }
 
 func init() { file_home_view_v6_proto_init() }
@@ -1096,7 +1094,6 @@ func file_home_view_v6_proto_init() {
 		return
 	}
 	file_banner_proto_init()
-	file_home_view_v4_proto_init()
 	file_languages_proto_init()
 	file_popup_proto_init()
 	file_ranking_tab_type_proto_init()

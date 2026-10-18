@@ -41,6 +41,7 @@ type MangaViewer struct {
 	RatingPopup             *Popup                                 `protobuf:"bytes,16,opt,name=rating_popup,json=ratingPopup,proto3" json:"rating_popup,omitempty"`
 	TitleAvailableLanguages []*MangaViewer_TitleAvailableLanguages `protobuf:"bytes,17,rep,name=title_available_languages,json=titleAvailableLanguages,proto3" json:"title_available_languages,omitempty"`
 	Title                   *Title                                 `protobuf:"bytes,18,opt,name=title,proto3" json:"title,omitempty"`
+	DisplayInAppReview      bool                                   `protobuf:"varint,20,opt,name=display_in_app_review,json=displayInAppReview,proto3" json:"display_in_app_review,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
 }
@@ -201,6 +202,13 @@ func (x *MangaViewer) GetTitle() *Title {
 	return nil
 }
 
+func (x *MangaViewer) GetDisplayInAppReview() bool {
+	if x != nil {
+		return x.DisplayInAppReview
+	}
+	return false
+}
+
 type MangaViewer_TitleAvailableLanguages struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	TitleId       uint32                 `protobuf:"varint,1,opt,name=title_id,json=titleId,proto3" json:"title_id,omitempty"`
@@ -266,7 +274,7 @@ var File_manga_viewer_proto protoreflect.FileDescriptor
 const file_manga_viewer_proto_rawDesc = "" +
 	"\n" +
 	"\x12manga_viewer.proto\x12\x16jp.co.comic.jump.proto\x1a\rchapter.proto\x1a\x0flanguages.proto\x1a\n" +
-	"page.proto\x1a\vpopup.proto\x1a\tsns.proto\x1a\x12subscription.proto\x1a\vtitle.proto\"\x8c\b\n" +
+	"page.proto\x1a\vpopup.proto\x1a\tsns.proto\x1a\x12subscription.proto\x1a\vtitle.proto\"\xbf\b\n" +
 	"\vMangaViewer\x122\n" +
 	"\x05pages\x18\x01 \x03(\v2\x1c.jp.co.comic.jump.proto.PageR\x05pages\x12\x1d\n" +
 	"\n" +
@@ -289,7 +297,8 @@ const file_manga_viewer_proto_rawDesc = "" +
 	"\x0etitle_language\x18\x0f \x01(\tR\rtitleLanguage\x12@\n" +
 	"\frating_popup\x18\x10 \x01(\v2\x1d.jp.co.comic.jump.proto.PopupR\vratingPopup\x12w\n" +
 	"\x19title_available_languages\x18\x11 \x03(\v2;.jp.co.comic.jump.proto.MangaViewer.TitleAvailableLanguagesR\x17titleAvailableLanguages\x123\n" +
-	"\x05title\x18\x12 \x01(\v2\x1d.jp.co.comic.jump.proto.TitleR\x05title\x1a\x89\x01\n" +
+	"\x05title\x18\x12 \x01(\v2\x1d.jp.co.comic.jump.proto.TitleR\x05title\x121\n" +
+	"\x15display_in_app_review\x18\x14 \x01(\bR\x12displayInAppReview\x1a\x89\x01\n" +
 	"\x17TitleAvailableLanguages\x12\x19\n" +
 	"\btitle_id\x18\x01 \x01(\rR\atitleId\x12<\n" +
 	"\blanguage\x18\x02 \x01(\x0e2 .jp.co.comic.jump.proto.LanguageR\blanguage\x12\x15\n" +
