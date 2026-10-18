@@ -94,6 +94,8 @@ type Chapter struct {
 	CommentCount         uint32                 `protobuf:"varint,14,opt,name=comment_count,json=commentCount,proto3" json:"comment_count,omitempty"`
 	IsUpdated            bool                   `protobuf:"varint,15,opt,name=is_updated,json=isUpdated,proto3" json:"is_updated,omitempty"`
 	ChapterType          ChapterType            `protobuf:"varint,16,opt,name=chapter_type,json=chapterType,proto3,enum=jp.co.comic.jump.proto.ChapterType" json:"chapter_type,omitempty"`
+	CampaignText         string                 `protobuf:"bytes,17,opt,name=campaign_text,json=campaignText,proto3" json:"campaign_text,omitempty"`
+	CampaignEndTimeStamp uint32                 `protobuf:"varint,18,opt,name=campaign_end_time_stamp,json=campaignEndTimeStamp,proto3" json:"campaign_end_time_stamp,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
@@ -240,11 +242,25 @@ func (x *Chapter) GetChapterType() ChapterType {
 	return ChapterType_FREE
 }
 
+func (x *Chapter) GetCampaignText() string {
+	if x != nil {
+		return x.CampaignText
+	}
+	return ""
+}
+
+func (x *Chapter) GetCampaignEndTimeStamp() uint32 {
+	if x != nil {
+		return x.CampaignEndTimeStamp
+	}
+	return 0
+}
+
 var File_chapter_proto protoreflect.FileDescriptor
 
 const file_chapter_proto_rawDesc = "" +
 	"\n" +
-	"\rchapter.proto\x12\x16jp.co.comic.jump.proto\"\xf1\x04\n" +
+	"\rchapter.proto\x12\x16jp.co.comic.jump.proto\"\xcd\x05\n" +
 	"\aChapter\x12\x19\n" +
 	"\btitle_id\x18\x01 \x01(\rR\atitleId\x12\x1d\n" +
 	"\n" +
@@ -265,7 +281,9 @@ const file_chapter_proto_rawDesc = "" +
 	"\rcomment_count\x18\x0e \x01(\rR\fcommentCount\x12\x1d\n" +
 	"\n" +
 	"is_updated\x18\x0f \x01(\bR\tisUpdated\x12F\n" +
-	"\fchapter_type\x18\x10 \x01(\x0e2#.jp.co.comic.jump.proto.ChapterTypeR\vchapterType*f\n" +
+	"\fchapter_type\x18\x10 \x01(\x0e2#.jp.co.comic.jump.proto.ChapterTypeR\vchapterType\x12#\n" +
+	"\rcampaign_text\x18\x11 \x01(\tR\fcampaignText\x125\n" +
+	"\x17campaign_end_time_stamp\x18\x12 \x01(\rR\x14campaignEndTimeStamp*f\n" +
 	"\vChapterType\x12\b\n" +
 	"\x04FREE\x10\x00\x12\x17\n" +
 	"\x13FREE_FOR_FIRST_TIME\x10\x01\x12\f\n" +

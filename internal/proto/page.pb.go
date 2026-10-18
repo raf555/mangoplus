@@ -342,7 +342,7 @@ type Page_LastPage struct {
 	NextChapter               *Chapter                        `protobuf:"bytes,2,opt,name=next_chapter,json=nextChapter,proto3" json:"next_chapter,omitempty"`
 	TopComments               []*Comment                      `protobuf:"bytes,3,rep,name=top_comments,json=topComments,proto3" json:"top_comments,omitempty"`
 	IsSubscribed              bool                            `protobuf:"varint,4,opt,name=is_subscribed,json=isSubscribed,proto3" json:"is_subscribed,omitempty"`
-	NextTimeStamp             uint32                          `protobuf:"varint,5,opt,name=next_time_stamp,json=nextTimeStamp,proto3" json:"next_time_stamp,omitempty"`
+	NextTimeStamp             int64                           `protobuf:"varint,5,opt,name=next_time_stamp,json=nextTimeStamp,proto3" json:"next_time_stamp,omitempty"`
 	ChapterType               Page_ChapterType                `protobuf:"varint,6,opt,name=chapter_type,json=chapterType,proto3,enum=jp.co.comic.jump.proto.Page_ChapterType" json:"chapter_type,omitempty"`
 	Advertisement             *AdNetworkList                  `protobuf:"bytes,7,opt,name=advertisement,proto3" json:"advertisement,omitempty"`
 	MovieReward               *Popup                          `protobuf:"bytes,8,opt,name=movie_reward,json=movieReward,proto3" json:"movie_reward,omitempty"`
@@ -422,7 +422,7 @@ func (x *Page_LastPage) GetIsSubscribed() bool {
 	return false
 }
 
-func (x *Page_LastPage) GetNextTimeStamp() uint32 {
+func (x *Page_LastPage) GetNextTimeStamp() int64 {
 	if x != nil {
 		return x.NextTimeStamp
 	}
@@ -627,7 +627,7 @@ const file_page_proto_rawDesc = "" +
 	"\fnext_chapter\x18\x02 \x01(\v2\x1f.jp.co.comic.jump.proto.ChapterR\vnextChapter\x12B\n" +
 	"\ftop_comments\x18\x03 \x03(\v2\x1f.jp.co.comic.jump.proto.CommentR\vtopComments\x12#\n" +
 	"\ris_subscribed\x18\x04 \x01(\bR\fisSubscribed\x12&\n" +
-	"\x0fnext_time_stamp\x18\x05 \x01(\rR\rnextTimeStamp\x12K\n" +
+	"\x0fnext_time_stamp\x18\x05 \x01(\x03R\rnextTimeStamp\x12K\n" +
 	"\fchapter_type\x18\x06 \x01(\x0e2(.jp.co.comic.jump.proto.Page.ChapterTypeR\vchapterType\x12K\n" +
 	"\radvertisement\x18\a \x01(\v2%.jp.co.comic.jump.proto.AdNetworkListR\radvertisement\x12@\n" +
 	"\fmovie_reward\x18\b \x01(\v2\x1d.jp.co.comic.jump.proto.PopupR\vmovieReward\x128\n" +

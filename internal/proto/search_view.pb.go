@@ -22,12 +22,12 @@ const (
 )
 
 type SearchView struct {
-	state            protoimpl.MessageState         `protogen:"open.v1"`
-	TopSearchBanners []*Banner                      `protobuf:"bytes,1,rep,name=top_search_banners,json=topSearchBanners,proto3" json:"top_search_banners,omitempty"`
-	AllTags          []*Tag                         `protobuf:"bytes,2,rep,name=all_tags,json=allTags,proto3" json:"all_tags,omitempty"`
-	AllTitlesGroup   []*AllTitlesGroup              `protobuf:"bytes,3,rep,name=all_titles_group,json=allTitlesGroup,proto3" json:"all_titles_group,omitempty"`
-	Contents         []*FeaturedTitlesView_Contents `protobuf:"bytes,5,rep,name=contents,proto3" json:"contents,omitempty"`
-	AllLabels        []*LabelV2                     `protobuf:"bytes,6,rep,name=all_labels,json=allLabels,proto3" json:"all_labels,omitempty"`
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	TopSearchBanners []*Banner              `protobuf:"bytes,1,rep,name=top_search_banners,json=topSearchBanners,proto3" json:"top_search_banners,omitempty"`
+	AllTags          []*Tag                 `protobuf:"bytes,2,rep,name=all_tags,json=allTags,proto3" json:"all_tags,omitempty"`
+	AllTitlesGroup   []*AllTitlesGroup      `protobuf:"bytes,3,rep,name=all_titles_group,json=allTitlesGroup,proto3" json:"all_titles_group,omitempty"`
+	Contents         []*SearchView_Contents `protobuf:"bytes,5,rep,name=contents,proto3" json:"contents,omitempty"`
+	AllLabels        []*LabelV2             `protobuf:"bytes,6,rep,name=all_labels,json=allLabels,proto3" json:"all_labels,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -83,7 +83,7 @@ func (x *SearchView) GetAllTitlesGroup() []*AllTitlesGroup {
 	return nil
 }
 
-func (x *SearchView) GetContents() []*FeaturedTitlesView_Contents {
+func (x *SearchView) GetContents() []*SearchView_Contents {
 	if x != nil {
 		return x.Contents
 	}
@@ -177,13 +177,13 @@ var File_search_view_proto protoreflect.FileDescriptor
 
 const file_search_view_proto_rawDesc = "" +
 	"\n" +
-	"\x11search_view.proto\x12\x16jp.co.comic.jump.proto\x1a\fbanner.proto\x1a\x1afeatured_titles_view.proto\x1a\vlabel.proto\x1a\x0elabel_v2.proto\x1a\ttag.proto\x1a\x10title_list.proto\x1a\x16title_list_group.proto\"\xe1\x05\n" +
+	"\x11search_view.proto\x12\x16jp.co.comic.jump.proto\x1a\fbanner.proto\x1a\vlabel.proto\x1a\x0elabel_v2.proto\x1a\ttag.proto\x1a\x10title_list.proto\x1a\x16title_list_group.proto\"\xd9\x05\n" +
 	"\n" +
 	"SearchView\x12L\n" +
 	"\x12top_search_banners\x18\x01 \x03(\v2\x1e.jp.co.comic.jump.proto.BannerR\x10topSearchBanners\x126\n" +
 	"\ball_tags\x18\x02 \x03(\v2\x1b.jp.co.comic.jump.proto.TagR\aallTags\x12P\n" +
-	"\x10all_titles_group\x18\x03 \x03(\v2&.jp.co.comic.jump.proto.AllTitlesGroupR\x0eallTitlesGroup\x12O\n" +
-	"\bcontents\x18\x05 \x03(\v23.jp.co.comic.jump.proto.FeaturedTitlesView.ContentsR\bcontents\x12>\n" +
+	"\x10all_titles_group\x18\x03 \x03(\v2&.jp.co.comic.jump.proto.AllTitlesGroupR\x0eallTitlesGroup\x12G\n" +
+	"\bcontents\x18\x05 \x03(\v2+.jp.co.comic.jump.proto.SearchView.ContentsR\bcontents\x12>\n" +
 	"\n" +
 	"all_labels\x18\x06 \x03(\v2\x1f.jp.co.comic.jump.proto.LabelV2R\tallLabels\x1a\xe9\x02\n" +
 	"\bContents\x126\n" +
@@ -209,29 +209,28 @@ func file_search_view_proto_rawDescGZIP() []byte {
 
 var file_search_view_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_search_view_proto_goTypes = []any{
-	(*SearchView)(nil),                  // 0: jp.co.comic.jump.proto.SearchView
-	(*SearchView_Contents)(nil),         // 1: jp.co.comic.jump.proto.SearchView.Contents
-	(*Banner)(nil),                      // 2: jp.co.comic.jump.proto.Banner
-	(*Tag)(nil),                         // 3: jp.co.comic.jump.proto.Tag
-	(*AllTitlesGroup)(nil),              // 4: jp.co.comic.jump.proto.AllTitlesGroup
-	(*FeaturedTitlesView_Contents)(nil), // 5: jp.co.comic.jump.proto.FeaturedTitlesView.Contents
-	(*LabelV2)(nil),                     // 6: jp.co.comic.jump.proto.LabelV2
-	(*TitleList)(nil),                   // 7: jp.co.comic.jump.proto.TitleList
-	(*TitleRankingGroup)(nil),           // 8: jp.co.comic.jump.proto.TitleRankingGroup
-	(*Label)(nil),                       // 9: jp.co.comic.jump.proto.Label
-	(*ChapterPageList)(nil),             // 10: jp.co.comic.jump.proto.ChapterPageList
+	(*SearchView)(nil),          // 0: jp.co.comic.jump.proto.SearchView
+	(*SearchView_Contents)(nil), // 1: jp.co.comic.jump.proto.SearchView.Contents
+	(*Banner)(nil),              // 2: jp.co.comic.jump.proto.Banner
+	(*Tag)(nil),                 // 3: jp.co.comic.jump.proto.Tag
+	(*AllTitlesGroup)(nil),      // 4: jp.co.comic.jump.proto.AllTitlesGroup
+	(*LabelV2)(nil),             // 5: jp.co.comic.jump.proto.LabelV2
+	(*TitleList)(nil),           // 6: jp.co.comic.jump.proto.TitleList
+	(*TitleRankingGroup)(nil),   // 7: jp.co.comic.jump.proto.TitleRankingGroup
+	(*Label)(nil),               // 8: jp.co.comic.jump.proto.Label
+	(*ChapterPageList)(nil),     // 9: jp.co.comic.jump.proto.ChapterPageList
 }
 var file_search_view_proto_depIdxs = []int32{
 	2,  // 0: jp.co.comic.jump.proto.SearchView.top_search_banners:type_name -> jp.co.comic.jump.proto.Banner
 	3,  // 1: jp.co.comic.jump.proto.SearchView.all_tags:type_name -> jp.co.comic.jump.proto.Tag
 	4,  // 2: jp.co.comic.jump.proto.SearchView.all_titles_group:type_name -> jp.co.comic.jump.proto.AllTitlesGroup
-	5,  // 3: jp.co.comic.jump.proto.SearchView.contents:type_name -> jp.co.comic.jump.proto.FeaturedTitlesView.Contents
-	6,  // 4: jp.co.comic.jump.proto.SearchView.all_labels:type_name -> jp.co.comic.jump.proto.LabelV2
+	1,  // 3: jp.co.comic.jump.proto.SearchView.contents:type_name -> jp.co.comic.jump.proto.SearchView.Contents
+	5,  // 4: jp.co.comic.jump.proto.SearchView.all_labels:type_name -> jp.co.comic.jump.proto.LabelV2
 	2,  // 5: jp.co.comic.jump.proto.SearchView.Contents.banner:type_name -> jp.co.comic.jump.proto.Banner
-	7,  // 6: jp.co.comic.jump.proto.SearchView.Contents.title_list:type_name -> jp.co.comic.jump.proto.TitleList
-	8,  // 7: jp.co.comic.jump.proto.SearchView.Contents.ranked_titles:type_name -> jp.co.comic.jump.proto.TitleRankingGroup
-	9,  // 8: jp.co.comic.jump.proto.SearchView.Contents.all_labels:type_name -> jp.co.comic.jump.proto.Label
-	10, // 9: jp.co.comic.jump.proto.SearchView.Contents.chapter_pages_list:type_name -> jp.co.comic.jump.proto.ChapterPageList
+	6,  // 6: jp.co.comic.jump.proto.SearchView.Contents.title_list:type_name -> jp.co.comic.jump.proto.TitleList
+	7,  // 7: jp.co.comic.jump.proto.SearchView.Contents.ranked_titles:type_name -> jp.co.comic.jump.proto.TitleRankingGroup
+	8,  // 8: jp.co.comic.jump.proto.SearchView.Contents.all_labels:type_name -> jp.co.comic.jump.proto.Label
+	9,  // 9: jp.co.comic.jump.proto.SearchView.Contents.chapter_pages_list:type_name -> jp.co.comic.jump.proto.ChapterPageList
 	10, // [10:10] is the sub-list for method output_type
 	10, // [10:10] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name
@@ -245,7 +244,6 @@ func file_search_view_proto_init() {
 		return
 	}
 	file_banner_proto_init()
-	file_featured_titles_view_proto_init()
 	file_label_proto_init()
 	file_label_v2_proto_init()
 	file_tag_proto_init()

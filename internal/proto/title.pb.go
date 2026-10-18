@@ -90,6 +90,7 @@ type Title struct {
 	Language          Language               `protobuf:"varint,7,opt,name=language,proto3,enum=jp.co.comic.jump.proto.Language" json:"language,omitempty"`
 	TitleUpdateStatus TitleUpdateStatus      `protobuf:"varint,8,opt,name=titleUpdateStatus,proto3,enum=jp.co.comic.jump.proto.TitleUpdateStatus" json:"titleUpdateStatus,omitempty"`
 	FavoriteImageUrl  string                 `protobuf:"bytes,9,opt,name=favorite_image_url,json=favoriteImageUrl,proto3" json:"favorite_image_url,omitempty"`
+	CampaignText      *string                `protobuf:"bytes,10,opt,name=campaign_text,json=campaignText,proto3,oneof" json:"campaign_text,omitempty"`
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
@@ -183,6 +184,13 @@ func (x *Title) GetTitleUpdateStatus() TitleUpdateStatus {
 func (x *Title) GetFavoriteImageUrl() string {
 	if x != nil {
 		return x.FavoriteImageUrl
+	}
+	return ""
+}
+
+func (x *Title) GetCampaignText() string {
+	if x != nil && x.CampaignText != nil {
+		return *x.CampaignText
 	}
 	return ""
 }
@@ -659,7 +667,7 @@ var File_title_proto protoreflect.FileDescriptor
 
 const file_title_proto_rawDesc = "" +
 	"\n" +
-	"\vtitle.proto\x12\x16jp.co.comic.jump.proto\x1a\x0flanguages.proto\"\x8f\x03\n" +
+	"\vtitle.proto\x12\x16jp.co.comic.jump.proto\x1a\x0flanguages.proto\"\xcb\x03\n" +
 	"\x05Title\x12\x19\n" +
 	"\btitle_id\x18\x01 \x01(\rR\atitleId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x16\n" +
@@ -669,7 +677,10 @@ const file_title_proto_rawDesc = "" +
 	"\tviewCount\x18\x06 \x01(\rR\tviewCount\x12<\n" +
 	"\blanguage\x18\a \x01(\x0e2 .jp.co.comic.jump.proto.LanguageR\blanguage\x12W\n" +
 	"\x11titleUpdateStatus\x18\b \x01(\x0e2).jp.co.comic.jump.proto.TitleUpdateStatusR\x11titleUpdateStatus\x12,\n" +
-	"\x12favorite_image_url\x18\t \x01(\tR\x10favoriteImageUrl\"\xa6\x02\n" +
+	"\x12favorite_image_url\x18\t \x01(\tR\x10favoriteImageUrl\x12(\n" +
+	"\rcampaign_text\x18\n" +
+	" \x01(\tH\x00R\fcampaignText\x88\x01\x01B\x10\n" +
+	"\x0e_campaign_text\"\xa6\x02\n" +
 	"\fUpdatedTitle\x123\n" +
 	"\x05title\x18\x01 \x01(\v2\x1d.jp.co.comic.jump.proto.TitleR\x05title\x12\x1d\n" +
 	"\n" +
@@ -765,6 +776,7 @@ func file_title_proto_init() {
 		return
 	}
 	file_languages_proto_init()
+	file_title_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

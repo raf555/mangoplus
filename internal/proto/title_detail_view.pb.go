@@ -260,6 +260,8 @@ type TitleDetailView struct {
 	UserHasUsedTrial         bool                                    `protobuf:"varint,43,opt,name=user_has_used_trial,json=userHasUsedTrial,proto3" json:"user_has_used_trial,omitempty"`
 	PlanBoxDescription       *SubscriptionPlanBoxDescription         `protobuf:"bytes,44,opt,name=plan_box_description,json=planBoxDescription,proto3" json:"plan_box_description,omitempty"`
 	Note                     *SubscriptionNote                       `protobuf:"bytes,45,opt,name=note,proto3" json:"note,omitempty"`
+	CampaignDetailText       *string                                 `protobuf:"bytes,46,opt,name=campaign_detail_text,json=campaignDetailText,proto3,oneof" json:"campaign_detail_text,omitempty"`
+	ChapterContentList       []*TitleDetailView_ChapterContent       `protobuf:"bytes,47,rep,name=chapter_content_list,json=chapterContentList,proto3" json:"chapter_content_list,omitempty"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
 }
@@ -609,6 +611,20 @@ func (x *TitleDetailView) GetNote() *SubscriptionNote {
 	return nil
 }
 
+func (x *TitleDetailView) GetCampaignDetailText() string {
+	if x != nil && x.CampaignDetailText != nil {
+		return *x.CampaignDetailText
+	}
+	return ""
+}
+
+func (x *TitleDetailView) GetChapterContentList() []*TitleDetailView_ChapterContent {
+	if x != nil {
+		return x.ChapterContentList
+	}
+	return nil
+}
+
 type TitleDetailView_TitleLabels struct {
 	state           protoimpl.MessageState          `protogen:"open.v1"`
 	ReleaseSchedule TitleDetailView_ReleaseSchedule `protobuf:"varint,1,opt,name=release_schedule,json=releaseSchedule,proto3,enum=jp.co.comic.jump.proto.TitleDetailView_ReleaseSchedule" json:"release_schedule,omitempty"`
@@ -725,6 +741,7 @@ type TitleDetailView_TitleLanguages struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	TitleId       uint32                 `protobuf:"varint,1,opt,name=title_id,json=titleId,proto3" json:"title_id,omitempty"`
 	Language      Language               `protobuf:"varint,2,opt,name=language,proto3,enum=jp.co.comic.jump.proto.Language" json:"language,omitempty"`
+	IsNew         bool                   `protobuf:"varint,3,opt,name=is_new,json=isNew,proto3" json:"is_new,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -771,6 +788,13 @@ func (x *TitleDetailView_TitleLanguages) GetLanguage() Language {
 		return x.Language
 	}
 	return Language_ENGLISH
+}
+
+func (x *TitleDetailView_TitleLanguages) GetIsNew() bool {
+	if x != nil {
+		return x.IsNew
+	}
+	return false
 }
 
 type TitleDetailView_ChapterGroup struct {
@@ -893,11 +917,107 @@ func (x *TitleDetailView_MiddleChapterNeighbors) GetNextChapterId() uint32 {
 	return 0
 }
 
+type TitleDetailView_MiddleChapters struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	MiddleChapterList []*Chapter             `protobuf:"bytes,1,rep,name=middle_chapter_list,json=middleChapterList,proto3" json:"middle_chapter_list,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *TitleDetailView_MiddleChapters) Reset() {
+	*x = TitleDetailView_MiddleChapters{}
+	mi := &file_title_detail_view_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TitleDetailView_MiddleChapters) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TitleDetailView_MiddleChapters) ProtoMessage() {}
+
+func (x *TitleDetailView_MiddleChapters) ProtoReflect() protoreflect.Message {
+	mi := &file_title_detail_view_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TitleDetailView_MiddleChapters.ProtoReflect.Descriptor instead.
+func (*TitleDetailView_MiddleChapters) Descriptor() ([]byte, []int) {
+	return file_title_detail_view_proto_rawDescGZIP(), []int{0, 5}
+}
+
+func (x *TitleDetailView_MiddleChapters) GetMiddleChapterList() []*Chapter {
+	if x != nil {
+		return x.MiddleChapterList
+	}
+	return nil
+}
+
+type TitleDetailView_ChapterContent struct {
+	state          protoimpl.MessageState          `protogen:"open.v1"`
+	Chapter        *Chapter                        `protobuf:"bytes,1,opt,name=chapter,proto3" json:"chapter,omitempty"`
+	MiddleChapters *TitleDetailView_MiddleChapters `protobuf:"bytes,2,opt,name=middle_chapters,json=middleChapters,proto3" json:"middle_chapters,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *TitleDetailView_ChapterContent) Reset() {
+	*x = TitleDetailView_ChapterContent{}
+	mi := &file_title_detail_view_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TitleDetailView_ChapterContent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TitleDetailView_ChapterContent) ProtoMessage() {}
+
+func (x *TitleDetailView_ChapterContent) ProtoReflect() protoreflect.Message {
+	mi := &file_title_detail_view_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TitleDetailView_ChapterContent.ProtoReflect.Descriptor instead.
+func (*TitleDetailView_ChapterContent) Descriptor() ([]byte, []int) {
+	return file_title_detail_view_proto_rawDescGZIP(), []int{0, 6}
+}
+
+func (x *TitleDetailView_ChapterContent) GetChapter() *Chapter {
+	if x != nil {
+		return x.Chapter
+	}
+	return nil
+}
+
+func (x *TitleDetailView_ChapterContent) GetMiddleChapters() *TitleDetailView_MiddleChapters {
+	if x != nil {
+		return x.MiddleChapters
+	}
+	return nil
+}
+
 var File_title_detail_view_proto protoreflect.FileDescriptor
 
 const file_title_detail_view_proto_rawDesc = "" +
 	"\n" +
-	"\x17title_detail_view.proto\x12\x16jp.co.comic.jump.proto\x1a\x10ad_network.proto\x1a\fbanner.proto\x1a\rchapter.proto\x1a\x0edialogue.proto\x1a\vlabel.proto\x1a\x0elabel_v2.proto\x1a\x0flanguages.proto\x1a\x0fmeta_info.proto\x1a\vpopup.proto\x1a\x14publisher_news.proto\x1a\tsns.proto\x1a\x12subscription.proto\x1a\ttag.proto\x1a\vtitle.proto\x1a\x12user_tickets.proto\"\xc0 \n" +
+	"\x17title_detail_view.proto\x12\x16jp.co.comic.jump.proto\x1a\x10ad_network.proto\x1a\fbanner.proto\x1a\rchapter.proto\x1a\x0edialogue.proto\x1a\vlabel.proto\x1a\x0elabel_v2.proto\x1a\x0flanguages.proto\x1a\x0fmeta_info.proto\x1a\vpopup.proto\x1a\x14publisher_news.proto\x1a\tsns.proto\x1a\x12subscription.proto\x1a\ttag.proto\x1a\vtitle.proto\x1a\x12user_tickets.proto\"\xa4$\n" +
 	"\x0fTitleDetailView\x123\n" +
 	"\x05title\x18\x01 \x01(\v2\x1d.jp.co.comic.jump.proto.TitleR\x05title\x12&\n" +
 	"\x0ftitle_image_url\x18\x02 \x01(\tR\rtitleImageUrl\x12\x1a\n" +
@@ -946,7 +1066,9 @@ const file_title_detail_view_proto_rawDesc = "" +
 	"plan_types\x18* \x03(\v2 .jp.co.comic.jump.proto.PlanTypeR\tplanTypes\x12-\n" +
 	"\x13user_has_used_trial\x18+ \x01(\bR\x10userHasUsedTrial\x12h\n" +
 	"\x14plan_box_description\x18, \x01(\v26.jp.co.comic.jump.proto.SubscriptionPlanBoxDescriptionR\x12planBoxDescription\x12<\n" +
-	"\x04note\x18- \x01(\v2(.jp.co.comic.jump.proto.SubscriptionNoteR\x04note\x1a\xaf\x01\n" +
+	"\x04note\x18- \x01(\v2(.jp.co.comic.jump.proto.SubscriptionNoteR\x04note\x125\n" +
+	"\x14campaign_detail_text\x18. \x01(\tH\x00R\x12campaignDetailText\x88\x01\x01\x12h\n" +
+	"\x14chapter_content_list\x18/ \x03(\v26.jp.co.comic.jump.proto.TitleDetailView.ChapterContentR\x12chapterContentList\x1a\xaf\x01\n" +
 	"\vTitleLabels\x12b\n" +
 	"\x10release_schedule\x18\x01 \x01(\x0e27.jp.co.comic.jump.proto.TitleDetailView.ReleaseScheduleR\x0freleaseSchedule\x12\x1f\n" +
 	"\vis_simulpub\x18\x02 \x01(\bR\n" +
@@ -954,10 +1076,11 @@ const file_title_detail_view_proto_rawDesc = "" +
 	"\tplan_type\x18\x03 \x01(\tR\bplanType\x1a\x95\x01\n" +
 	"\rPublisherItem\x126\n" +
 	"\x06banner\x18\x01 \x01(\v2\x1e.jp.co.comic.jump.proto.BannerR\x06banner\x12L\n" +
-	"\x0epublisher_news\x18\x02 \x01(\v2%.jp.co.comic.jump.proto.PublisherNewsR\rpublisherNews\x1ai\n" +
+	"\x0epublisher_news\x18\x02 \x01(\v2%.jp.co.comic.jump.proto.PublisherNewsR\rpublisherNews\x1a\x80\x01\n" +
 	"\x0eTitleLanguages\x12\x19\n" +
 	"\btitle_id\x18\x01 \x01(\rR\atitleId\x12<\n" +
-	"\blanguage\x18\x02 \x01(\x0e2 .jp.co.comic.jump.proto.LanguageR\blanguage\x1a\x9e\x02\n" +
+	"\blanguage\x18\x02 \x01(\x0e2 .jp.co.comic.jump.proto.LanguageR\blanguage\x12\x15\n" +
+	"\x06is_new\x18\x03 \x01(\bR\x05isNew\x1a\x9e\x02\n" +
 	"\fChapterGroup\x12'\n" +
 	"\x0fchapter_numbers\x18\x01 \x01(\tR\x0echapterNumbers\x12M\n" +
 	"\x12first_chapter_list\x18\x02 \x03(\v2\x1f.jp.co.comic.jump.proto.ChapterR\x10firstChapterList\x12I\n" +
@@ -965,7 +1088,12 @@ const file_title_detail_view_proto_rawDesc = "" +
 	"\x11last_chapter_list\x18\x04 \x03(\v2\x1f.jp.co.comic.jump.proto.ChapterR\x0flastChapterList\x1ap\n" +
 	"\x16MiddleChapterNeighbors\x12.\n" +
 	"\x13previous_chapter_id\x18\x01 \x01(\rR\x11previousChapterId\x12&\n" +
-	"\x0fnext_chapter_id\x18\x02 \x01(\rR\rnextChapterId\"\xa7\x01\n" +
+	"\x0fnext_chapter_id\x18\x02 \x01(\rR\rnextChapterId\x1aa\n" +
+	"\x0eMiddleChapters\x12O\n" +
+	"\x13middle_chapter_list\x18\x01 \x03(\v2\x1f.jp.co.comic.jump.proto.ChapterR\x11middleChapterList\x1a\xac\x01\n" +
+	"\x0eChapterContent\x129\n" +
+	"\achapter\x18\x01 \x01(\v2\x1f.jp.co.comic.jump.proto.ChapterR\achapter\x12_\n" +
+	"\x0fmiddle_chapters\x18\x02 \x01(\v26.jp.co.comic.jump.proto.TitleDetailView.MiddleChaptersR\x0emiddleChapters\"\xa7\x01\n" +
 	"\x0fReleaseSchedule\x12\f\n" +
 	"\bDISABLED\x10\x00\x12\f\n" +
 	"\bEVERYDAY\x10\x01\x12\n" +
@@ -1001,7 +1129,8 @@ const file_title_detail_view_proto_rawDesc = "" +
 	"\x04TEEN\x10\x01\x12\f\n" +
 	"\bTEENPLUS\x10\x02\x12\n" +
 	"\n" +
-	"\x06MATURE\x10\x03b\x06proto3"
+	"\x06MATURE\x10\x03B\x17\n" +
+	"\x15_campaign_detail_textb\x06proto3"
 
 var (
 	file_title_detail_view_proto_rawDescOnce sync.Once
@@ -1016,7 +1145,7 @@ func file_title_detail_view_proto_rawDescGZIP() []byte {
 }
 
 var file_title_detail_view_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_title_detail_view_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_title_detail_view_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_title_detail_view_proto_goTypes = []any{
 	(TitleDetailView_ReleaseSchedule)(0),           // 0: jp.co.comic.jump.proto.TitleDetailView.ReleaseSchedule
 	(TitleDetailView_UpdateTiming)(0),              // 1: jp.co.comic.jump.proto.TitleDetailView.UpdateTiming
@@ -1027,68 +1156,74 @@ var file_title_detail_view_proto_goTypes = []any{
 	(*TitleDetailView_TitleLanguages)(nil),         // 6: jp.co.comic.jump.proto.TitleDetailView.TitleLanguages
 	(*TitleDetailView_ChapterGroup)(nil),           // 7: jp.co.comic.jump.proto.TitleDetailView.ChapterGroup
 	(*TitleDetailView_MiddleChapterNeighbors)(nil), // 8: jp.co.comic.jump.proto.TitleDetailView.MiddleChapterNeighbors
-	(*Title)(nil),                          // 9: jp.co.comic.jump.proto.Title
-	(*Chapter)(nil),                        // 10: jp.co.comic.jump.proto.Chapter
-	(*Banner)(nil),                         // 11: jp.co.comic.jump.proto.Banner
-	(*Sns)(nil),                            // 12: jp.co.comic.jump.proto.Sns
-	(*UserTickets)(nil),                    // 13: jp.co.comic.jump.proto.UserTickets
-	(*AdNetworkList)(nil),                  // 14: jp.co.comic.jump.proto.AdNetworkList
-	(*FreeViewDialogue)(nil),               // 15: jp.co.comic.jump.proto.FreeViewDialogue
-	(*Tag)(nil),                            // 16: jp.co.comic.jump.proto.Tag
-	(*Subscription)(nil),                   // 17: jp.co.comic.jump.proto.Subscription
-	(*Label)(nil),                          // 18: jp.co.comic.jump.proto.Label
-	(*MetaInfo)(nil),                       // 19: jp.co.comic.jump.proto.MetaInfo
-	(*Popup)(nil),                          // 20: jp.co.comic.jump.proto.Popup
-	(*LabelV2)(nil),                        // 21: jp.co.comic.jump.proto.LabelV2
-	(*PlanType)(nil),                       // 22: jp.co.comic.jump.proto.PlanType
-	(*SubscriptionPlanBoxDescription)(nil), // 23: jp.co.comic.jump.proto.SubscriptionPlanBoxDescription
-	(*SubscriptionNote)(nil),               // 24: jp.co.comic.jump.proto.SubscriptionNote
-	(*PublisherNews)(nil),                  // 25: jp.co.comic.jump.proto.PublisherNews
-	(Language)(0),                          // 26: jp.co.comic.jump.proto.Language
+	(*TitleDetailView_MiddleChapters)(nil),         // 9: jp.co.comic.jump.proto.TitleDetailView.MiddleChapters
+	(*TitleDetailView_ChapterContent)(nil),         // 10: jp.co.comic.jump.proto.TitleDetailView.ChapterContent
+	(*Title)(nil),                                  // 11: jp.co.comic.jump.proto.Title
+	(*Chapter)(nil),                                // 12: jp.co.comic.jump.proto.Chapter
+	(*Banner)(nil),                                 // 13: jp.co.comic.jump.proto.Banner
+	(*Sns)(nil),                                    // 14: jp.co.comic.jump.proto.Sns
+	(*UserTickets)(nil),                            // 15: jp.co.comic.jump.proto.UserTickets
+	(*AdNetworkList)(nil),                          // 16: jp.co.comic.jump.proto.AdNetworkList
+	(*FreeViewDialogue)(nil),                       // 17: jp.co.comic.jump.proto.FreeViewDialogue
+	(*Tag)(nil),                                    // 18: jp.co.comic.jump.proto.Tag
+	(*Subscription)(nil),                           // 19: jp.co.comic.jump.proto.Subscription
+	(*Label)(nil),                                  // 20: jp.co.comic.jump.proto.Label
+	(*MetaInfo)(nil),                               // 21: jp.co.comic.jump.proto.MetaInfo
+	(*Popup)(nil),                                  // 22: jp.co.comic.jump.proto.Popup
+	(*LabelV2)(nil),                                // 23: jp.co.comic.jump.proto.LabelV2
+	(*PlanType)(nil),                               // 24: jp.co.comic.jump.proto.PlanType
+	(*SubscriptionPlanBoxDescription)(nil),         // 25: jp.co.comic.jump.proto.SubscriptionPlanBoxDescription
+	(*SubscriptionNote)(nil),                       // 26: jp.co.comic.jump.proto.SubscriptionNote
+	(*PublisherNews)(nil),                          // 27: jp.co.comic.jump.proto.PublisherNews
+	(Language)(0),                                  // 28: jp.co.comic.jump.proto.Language
 }
 var file_title_detail_view_proto_depIdxs = []int32{
-	9,  // 0: jp.co.comic.jump.proto.TitleDetailView.title:type_name -> jp.co.comic.jump.proto.Title
+	11, // 0: jp.co.comic.jump.proto.TitleDetailView.title:type_name -> jp.co.comic.jump.proto.Title
 	1,  // 1: jp.co.comic.jump.proto.TitleDetailView.update_timing:type_name -> jp.co.comic.jump.proto.TitleDetailView.UpdateTiming
-	10, // 2: jp.co.comic.jump.proto.TitleDetailView.first_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
-	10, // 3: jp.co.comic.jump.proto.TitleDetailView.last_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
-	11, // 4: jp.co.comic.jump.proto.TitleDetailView.banners:type_name -> jp.co.comic.jump.proto.Banner
-	9,  // 5: jp.co.comic.jump.proto.TitleDetailView.recommended_title_list:type_name -> jp.co.comic.jump.proto.Title
-	12, // 6: jp.co.comic.jump.proto.TitleDetailView.sns:type_name -> jp.co.comic.jump.proto.Sns
+	12, // 2: jp.co.comic.jump.proto.TitleDetailView.first_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
+	12, // 3: jp.co.comic.jump.proto.TitleDetailView.last_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
+	13, // 4: jp.co.comic.jump.proto.TitleDetailView.banners:type_name -> jp.co.comic.jump.proto.Banner
+	11, // 5: jp.co.comic.jump.proto.TitleDetailView.recommended_title_list:type_name -> jp.co.comic.jump.proto.Title
+	14, // 6: jp.co.comic.jump.proto.TitleDetailView.sns:type_name -> jp.co.comic.jump.proto.Sns
 	2,  // 7: jp.co.comic.jump.proto.TitleDetailView.rating:type_name -> jp.co.comic.jump.proto.TitleDetailView.Rating
 	5,  // 8: jp.co.comic.jump.proto.TitleDetailView.publisher_items:type_name -> jp.co.comic.jump.proto.TitleDetailView.PublisherItem
-	11, // 9: jp.co.comic.jump.proto.TitleDetailView.title_banners:type_name -> jp.co.comic.jump.proto.Banner
-	13, // 10: jp.co.comic.jump.proto.TitleDetailView.user_tickets:type_name -> jp.co.comic.jump.proto.UserTickets
-	10, // 11: jp.co.comic.jump.proto.TitleDetailView.ticket_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
-	9,  // 12: jp.co.comic.jump.proto.TitleDetailView.ticket_title_list:type_name -> jp.co.comic.jump.proto.Title
-	11, // 13: jp.co.comic.jump.proto.TitleDetailView.publisher_banner:type_name -> jp.co.comic.jump.proto.Banner
-	14, // 14: jp.co.comic.jump.proto.TitleDetailView.advertisement:type_name -> jp.co.comic.jump.proto.AdNetworkList
+	13, // 9: jp.co.comic.jump.proto.TitleDetailView.title_banners:type_name -> jp.co.comic.jump.proto.Banner
+	15, // 10: jp.co.comic.jump.proto.TitleDetailView.user_tickets:type_name -> jp.co.comic.jump.proto.UserTickets
+	12, // 11: jp.co.comic.jump.proto.TitleDetailView.ticket_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
+	11, // 12: jp.co.comic.jump.proto.TitleDetailView.ticket_title_list:type_name -> jp.co.comic.jump.proto.Title
+	13, // 13: jp.co.comic.jump.proto.TitleDetailView.publisher_banner:type_name -> jp.co.comic.jump.proto.Banner
+	16, // 14: jp.co.comic.jump.proto.TitleDetailView.advertisement:type_name -> jp.co.comic.jump.proto.AdNetworkList
 	6,  // 15: jp.co.comic.jump.proto.TitleDetailView.title_languages:type_name -> jp.co.comic.jump.proto.TitleDetailView.TitleLanguages
 	7,  // 16: jp.co.comic.jump.proto.TitleDetailView.chapter_list_group:type_name -> jp.co.comic.jump.proto.TitleDetailView.ChapterGroup
-	15, // 17: jp.co.comic.jump.proto.TitleDetailView.free_view_dialogue:type_name -> jp.co.comic.jump.proto.FreeViewDialogue
-	16, // 18: jp.co.comic.jump.proto.TitleDetailView.tags:type_name -> jp.co.comic.jump.proto.Tag
+	17, // 17: jp.co.comic.jump.proto.TitleDetailView.free_view_dialogue:type_name -> jp.co.comic.jump.proto.FreeViewDialogue
+	18, // 18: jp.co.comic.jump.proto.TitleDetailView.tags:type_name -> jp.co.comic.jump.proto.Tag
 	4,  // 19: jp.co.comic.jump.proto.TitleDetailView.title_labels:type_name -> jp.co.comic.jump.proto.TitleDetailView.TitleLabels
-	17, // 20: jp.co.comic.jump.proto.TitleDetailView.user_subscription:type_name -> jp.co.comic.jump.proto.Subscription
-	18, // 21: jp.co.comic.jump.proto.TitleDetailView.label:type_name -> jp.co.comic.jump.proto.Label
-	19, // 22: jp.co.comic.jump.proto.TitleDetailView.meta_info:type_name -> jp.co.comic.jump.proto.MetaInfo
-	20, // 23: jp.co.comic.jump.proto.TitleDetailView.rating_popup:type_name -> jp.co.comic.jump.proto.Popup
-	10, // 24: jp.co.comic.jump.proto.TitleDetailView.chapter_list_v2:type_name -> jp.co.comic.jump.proto.Chapter
-	21, // 25: jp.co.comic.jump.proto.TitleDetailView.label_v2:type_name -> jp.co.comic.jump.proto.LabelV2
+	19, // 20: jp.co.comic.jump.proto.TitleDetailView.user_subscription:type_name -> jp.co.comic.jump.proto.Subscription
+	20, // 21: jp.co.comic.jump.proto.TitleDetailView.label:type_name -> jp.co.comic.jump.proto.Label
+	21, // 22: jp.co.comic.jump.proto.TitleDetailView.meta_info:type_name -> jp.co.comic.jump.proto.MetaInfo
+	22, // 23: jp.co.comic.jump.proto.TitleDetailView.rating_popup:type_name -> jp.co.comic.jump.proto.Popup
+	12, // 24: jp.co.comic.jump.proto.TitleDetailView.chapter_list_v2:type_name -> jp.co.comic.jump.proto.Chapter
+	23, // 25: jp.co.comic.jump.proto.TitleDetailView.label_v2:type_name -> jp.co.comic.jump.proto.LabelV2
 	8,  // 26: jp.co.comic.jump.proto.TitleDetailView.middle_chapter_neighbors:type_name -> jp.co.comic.jump.proto.TitleDetailView.MiddleChapterNeighbors
-	22, // 27: jp.co.comic.jump.proto.TitleDetailView.plan_types:type_name -> jp.co.comic.jump.proto.PlanType
-	23, // 28: jp.co.comic.jump.proto.TitleDetailView.plan_box_description:type_name -> jp.co.comic.jump.proto.SubscriptionPlanBoxDescription
-	24, // 29: jp.co.comic.jump.proto.TitleDetailView.note:type_name -> jp.co.comic.jump.proto.SubscriptionNote
-	0,  // 30: jp.co.comic.jump.proto.TitleDetailView.TitleLabels.release_schedule:type_name -> jp.co.comic.jump.proto.TitleDetailView.ReleaseSchedule
-	11, // 31: jp.co.comic.jump.proto.TitleDetailView.PublisherItem.banner:type_name -> jp.co.comic.jump.proto.Banner
-	25, // 32: jp.co.comic.jump.proto.TitleDetailView.PublisherItem.publisher_news:type_name -> jp.co.comic.jump.proto.PublisherNews
-	26, // 33: jp.co.comic.jump.proto.TitleDetailView.TitleLanguages.language:type_name -> jp.co.comic.jump.proto.Language
-	10, // 34: jp.co.comic.jump.proto.TitleDetailView.ChapterGroup.first_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
-	10, // 35: jp.co.comic.jump.proto.TitleDetailView.ChapterGroup.mid_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
-	10, // 36: jp.co.comic.jump.proto.TitleDetailView.ChapterGroup.last_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
-	37, // [37:37] is the sub-list for method output_type
-	37, // [37:37] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	24, // 27: jp.co.comic.jump.proto.TitleDetailView.plan_types:type_name -> jp.co.comic.jump.proto.PlanType
+	25, // 28: jp.co.comic.jump.proto.TitleDetailView.plan_box_description:type_name -> jp.co.comic.jump.proto.SubscriptionPlanBoxDescription
+	26, // 29: jp.co.comic.jump.proto.TitleDetailView.note:type_name -> jp.co.comic.jump.proto.SubscriptionNote
+	10, // 30: jp.co.comic.jump.proto.TitleDetailView.chapter_content_list:type_name -> jp.co.comic.jump.proto.TitleDetailView.ChapterContent
+	0,  // 31: jp.co.comic.jump.proto.TitleDetailView.TitleLabels.release_schedule:type_name -> jp.co.comic.jump.proto.TitleDetailView.ReleaseSchedule
+	13, // 32: jp.co.comic.jump.proto.TitleDetailView.PublisherItem.banner:type_name -> jp.co.comic.jump.proto.Banner
+	27, // 33: jp.co.comic.jump.proto.TitleDetailView.PublisherItem.publisher_news:type_name -> jp.co.comic.jump.proto.PublisherNews
+	28, // 34: jp.co.comic.jump.proto.TitleDetailView.TitleLanguages.language:type_name -> jp.co.comic.jump.proto.Language
+	12, // 35: jp.co.comic.jump.proto.TitleDetailView.ChapterGroup.first_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
+	12, // 36: jp.co.comic.jump.proto.TitleDetailView.ChapterGroup.mid_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
+	12, // 37: jp.co.comic.jump.proto.TitleDetailView.ChapterGroup.last_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
+	12, // 38: jp.co.comic.jump.proto.TitleDetailView.MiddleChapters.middle_chapter_list:type_name -> jp.co.comic.jump.proto.Chapter
+	12, // 39: jp.co.comic.jump.proto.TitleDetailView.ChapterContent.chapter:type_name -> jp.co.comic.jump.proto.Chapter
+	9,  // 40: jp.co.comic.jump.proto.TitleDetailView.ChapterContent.middle_chapters:type_name -> jp.co.comic.jump.proto.TitleDetailView.MiddleChapters
+	41, // [41:41] is the sub-list for method output_type
+	41, // [41:41] is the sub-list for method input_type
+	41, // [41:41] is the sub-list for extension type_name
+	41, // [41:41] is the sub-list for extension extendee
+	0,  // [0:41] is the sub-list for field type_name
 }
 
 func init() { file_title_detail_view_proto_init() }
@@ -1111,13 +1246,14 @@ func file_title_detail_view_proto_init() {
 	file_tag_proto_init()
 	file_title_proto_init()
 	file_user_tickets_proto_init()
+	file_title_detail_view_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_title_detail_view_proto_rawDesc), len(file_title_detail_view_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
