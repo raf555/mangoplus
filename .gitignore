@@ -31,5 +31,4 @@ go.work.sum
 # .idea/
 # .vscode/
 
-proto/
-!internal/proto
+*.proto

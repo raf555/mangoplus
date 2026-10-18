@@ -934,7 +934,7 @@ var File_home_view_v4_proto protoreflect.FileDescriptor
 
 const file_home_view_v4_proto_rawDesc = "" +
 	"\n" +
-	"\x12home_view_v4.proto\x12\x16jp.co.comic.jump.proto\x1a\fbanner.proto\x1a\x0flanguages.proto\x1a\vpopup.proto\x1a\x16ranking_tab_type.proto\x1a\x1aservice_announcement.proto\x1a\x12subscription.proto\x1a\x10title_list.proto\x1a\x16title_list_group.proto\x1a\x19updated_title_group.proto\x1a\x16web_home_view_v4.proto\"\xe7\x15\n" +
+	"\x12home_view_v4.proto\x12\x16jp.co.comic.jump.proto\x1a\fbanner.proto\x1a\x0flanguages.proto\x1a\vpopup.proto\x1a\x16ranking_tab_type.proto\x1a\x1aservice_announcement.proto\x1a\x12subscription.proto\x1a\x10title_list.proto\x1a\x16title_list_group.proto\x1a\x19updated_title_group.proto\"\xe7\x15\n" +
 	"\n" +
 	"HomeViewV4\x12G\n" +
 	"\bsections\x18\x01 \x03(\v2+.jp.co.comic.jump.proto.HomeViewV4.SectionsR\bsections\x123\n" +
@@ -1082,7 +1082,6 @@ func file_home_view_v4_proto_init() {
 	file_title_list_proto_init()
 	file_title_list_group_proto_init()
 	file_updated_title_group_proto_init()
-	file_web_home_view_v4_proto_init()
 	file_home_view_v4_proto_msgTypes[1].OneofWrappers = []any{
 		(*HomeViewV4_Sections_WeeklySection)(nil),
 		(*HomeViewV4_Sections_RankingSection)(nil),
