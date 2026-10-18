@@ -231,11 +231,7 @@ func TestTitle_GetTitleDetailV3_RatingValues(t *testing.T) {
 		pb   proto.TitleDetailView_Rating
 		want mangoplus.Rating
 	}{
-		// NOTE: the proto enum is "ALLAGE" (singular) but the exported
-		// constant RatingAllAges is "ALLAGES". ratingFromProto surfaces the
-		// proto spelling verbatim, so the exported constant does not match.
-		// Test records current behavior; see README for the discrepancy.
-		{"all ages", proto.TitleDetailView_ALLAGE, mangoplus.Rating("ALLAGE")},
+		{"all ages", proto.TitleDetailView_ALLAGE, mangoplus.RatingAllAges},
 		{"teen", proto.TitleDetailView_TEEN, mangoplus.RatingTeen},
 		{"teen plus", proto.TitleDetailView_TEENPLUS, mangoplus.RatingTeenPlus},
 		{"mature", proto.TitleDetailView_MATURE, mangoplus.RatingMature},

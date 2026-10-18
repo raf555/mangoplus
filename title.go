@@ -77,7 +77,7 @@ func titleDetailViewFromProto(pb *proto.TitleDetailView) TitleDetailView {
 type Rating string
 
 const (
-	RatingAllAges  Rating = "ALLAGES"
+	RatingAllAges  Rating = "ALLAGE"
 	RatingTeen     Rating = "TEEN"
 	RatingTeenPlus Rating = "TEENPLUS"
 	RatingMature   Rating = "MATURE"
