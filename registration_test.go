@@ -4,155 +4,82 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"net/http/httptest"
-	"net/url"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/raf555/mangoplus"
 	"github.com/raf555/mangoplus/internal/proto"
 )
 
-func TestRegistration_Register_Success(t *testing.T) {
-	var gotReq *http.Request
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		gotReq = r.Clone(context.Background())
-		writeProtoResponse(t, w, &proto.Response{
-			Result: &proto.Response_Success{
-				Success: &proto.SuccessResult{
-					Data: &proto.SuccessResult_RegisterationData{
-						RegisterationData: &proto.RegistrationData{DeviceSecret: "secret-123"},
-					},
-				},
+func TestRegistrationService_Register_Success(t *testing.T) {
+	t.Parallel()
+	// A configured secret must not be sent while registering.
+	client, mux, _ := setup(t, mangoplus.WithSecret("s"))
+
+	mux.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPut)
+		testFormValues(t, r, values{
+			"device_token": "token",
+			"security_key": "key",
+			"os":           "android",
+			"os_ver":       mangoplus.DefaultOSVersion,
+			"app_ver":      mangoplus.DefaultAppVersion,
+		})
+		testWriteSuccess(t, w, &proto.SuccessResult{
+			Data: &proto.SuccessResult_RegisterationData{
+				RegisterationData: &proto.RegistrationData{DeviceSecret: "secret-123"},
 			},
 		})
-	}))
-	t.Cleanup(srv.Close)
+	})
 
-	c, err := mangoplus.NewClient(
-		mangoplus.WithAndroidID("deadbeef"),
-		mangoplus.WithTransport(rewriteTransport(t, srv.URL)),
-	)
+	got, err := client.Registration.Register(t.Context(), "token", "key")
 	if err != nil {
-		t.Fatalf("NewClient: %v", err)
+		t.Fatalf("Registration.Register returned error: %v", err)
 	}
 
-	got, err := c.Registration.Register(context.Background(), "token", "key")
-	if err != nil {
-		t.Fatalf("Register: %v", err)
-	}
-	if got.DeviceSecret != "secret-123" {
-		t.Errorf("DeviceSecret = %q, want secret-123", got.DeviceSecret)
-	}
-
-	if gotReq == nil {
-		t.Fatal("no request captured")
-	}
-	if gotReq.Method != http.MethodPut {
-		t.Errorf("Method = %q, want PUT", gotReq.Method)
-	}
-	if gotReq.URL.Path != "/api/register" {
-		t.Errorf("Path = %q, want /api/register", gotReq.URL.Path)
-	}
-	q := gotReq.URL.Query()
-	if q.Get("device_token") != "token" {
-		t.Errorf("device_token = %q, want token", q.Get("device_token"))
-	}
-	if q.Get("security_key") != "key" {
-		t.Errorf("security_key = %q, want key", q.Get("security_key"))
-	}
-	if q.Has("secret") {
-		t.Error("secret query must be omitted during registration")
+	want := mangoplus.RegistrationData{DeviceSecret: "secret-123"}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("Registration.Register mismatch (-want +got):\n%s", diff)
 	}
 }
 
-func TestRegistration_Register_EmptySecretReturnsError(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		writeProtoResponse(t, w, &proto.Response{
-			Result: &proto.Response_Success{
-				Success: &proto.SuccessResult{
-					Data: &proto.SuccessResult_RegisterationData{
-						RegisterationData: &proto.RegistrationData{DeviceSecret: ""},
-					},
-				},
+func TestRegistrationService_Register_RequestFailed(t *testing.T) {
+	t.Parallel()
+	testNewRequestAndDoFailure(t, "Registration.Register", func(ctx context.Context, client *mangoplus.Client) error {
+		_, err := client.Registration.Register(ctx, "token", "key")
+		return err
+	})
+}
+
+func TestRegistrationService_Register_EmptySecret(t *testing.T) {
+	t.Parallel()
+	client, mux, _ := setup(t)
+
+	mux.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		testWriteSuccess(t, w, &proto.SuccessResult{
+			Data: &proto.SuccessResult_RegisterationData{
+				RegisterationData: &proto.RegistrationData{DeviceSecret: ""},
 			},
 		})
-	}))
-	t.Cleanup(srv.Close)
+	})
 
-	c, err := mangoplus.NewClient(
-		mangoplus.WithAndroidID("deadbeef"),
-		mangoplus.WithTransport(rewriteTransport(t, srv.URL)),
-	)
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
-
-	if _, err := c.Registration.Register(context.Background(), "t", "k"); err == nil {
-		t.Error("Register returned nil error for empty secret, want non-nil")
+	if _, err := client.Registration.Register(t.Context(), "token", "key"); err == nil {
+		t.Error("Registration.Register returned nil error for empty secret, want error")
 	}
 }
 
-func TestRegistration_Register_ProtoError(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		writeProtoResponse(t, w, errorResponse(&proto.ErrorResult{
-			Action: proto.ErrorResult_DEFAULT,
-			EnglishPopup: &proto.Popup_OSDefault{
-				Subject: "Not Found",
-				Body:    "nope",
-			},
-		}))
-	}))
-	t.Cleanup(srv.Close)
+func TestRegistrationService_Register_ProtoError(t *testing.T) {
+	t.Parallel()
+	client, mux, _ := setup(t)
 
-	c, err := mangoplus.NewClient(
-		mangoplus.WithAndroidID("deadbeef"),
-		mangoplus.WithTransport(rewriteTransport(t, srv.URL)),
-	)
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
+	mux.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		testWriteError(t, w, &proto.ErrorResult{
+			EnglishPopup: &proto.Popup_OSDefault{Subject: "Not Found", Body: "nope"},
+		})
+	})
 
-	_, err = c.Registration.Register(context.Background(), "t", "k")
-	if err == nil {
-		t.Fatal("Register returned nil error, want *ProtoError")
-	}
+	_, err := client.Registration.Register(t.Context(), "token", "key")
 	if !errors.Is(err, mangoplus.ErrNotFound) {
-		t.Errorf("errors.Is(err, ErrNotFound) = false, want true (err=%v)", err)
-	}
-}
-
-func TestClient_Register_UsesDeviceToken(t *testing.T) {
-	// Register derives device_token and security_key from the android ID.
-	// Different android IDs must yield different tokens.
-	received := map[string]url.Values{}
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		received[r.URL.Query().Get("device_token")] = r.URL.Query()
-		writeProtoResponse(t, w, &proto.Response{
-			Result: &proto.Response_Success{
-				Success: &proto.SuccessResult{
-					Data: &proto.SuccessResult_RegisterationData{
-						RegisterationData: &proto.RegistrationData{DeviceSecret: "ok"},
-					},
-				},
-			},
-		})
-	}))
-	t.Cleanup(srv.Close)
-
-	for _, id := range []string{"aaaaaaaa", "bbbbbbbb"} {
-		c, err := mangoplus.NewClient(
-			mangoplus.WithAndroidID(id),
-			mangoplus.WithTransport(rewriteTransport(t, srv.URL)),
-		)
-		if err != nil {
-			t.Fatalf("NewClient(%q): %v", id, err)
-		}
-		if _, err := c.Register(context.Background()); err != nil {
-			t.Fatalf("Register(%q): %v", id, err)
-		}
-	}
-
-	if len(received) != 2 {
-		t.Errorf("got %d distinct device_tokens, want 2 (received=%v)", len(received), received)
+		t.Errorf("Registration.Register error = %v, want ErrNotFound", err)
 	}
 }
