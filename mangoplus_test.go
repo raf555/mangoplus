@@ -89,15 +89,18 @@ func TestClient_NewRequest_RelativePath(t *testing.T) {
 		t.Fatalf("NewClient: %v", err)
 	}
 
-	req, err := c.NewRequest(context.Background(), http.MethodGet, "/manga_viewer")
+	req, err := c.NewRequest(context.Background(), http.MethodGet, "/manga_viewer?chapter_id=1")
 	if err != nil {
 		t.Fatalf("NewRequest: %v", err)
 	}
-	if req.URL.Host == "" {
-		t.Error("Host is empty, want base URL host")
+	if req.URL.Host != "jumpg-api.tokyo-cdn.com" {
+		t.Errorf("Host = %q, want jumpg-api.tokyo-cdn.com", req.URL.Host)
 	}
-	if !strings.HasSuffix(req.URL.Path, "/manga_viewer") {
-		t.Errorf("Path = %q, want to end with /manga_viewer", req.URL.Path)
+	if req.URL.Path != "/api/manga_viewer" {
+		t.Errorf("Path = %q, want /api/manga_viewer", req.URL.Path)
+	}
+	if got := req.URL.Query().Get("chapter_id"); got != "1" {
+		t.Errorf("chapter_id = %q, want 1", got)
 	}
 }
 

@@ -64,6 +64,21 @@ func TestWithHTTPClient_CopiesClient(t *testing.T) {
 	}
 }
 
+func TestWithHTTPClient_KeepsJar(t *testing.T) {
+	jar, err := cookiejar.New(nil)
+	if err != nil {
+		t.Fatalf("cookiejar.New: %v", err)
+	}
+
+	c, err := mangoplus.NewClient(mangoplus.WithHTTPClient(&http.Client{Jar: jar}), mangoplus.WithSecret("s"))
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	if c.CookieJar() != jar {
+		t.Error("CookieJar() did not return the jar of the provided http.Client")
+	}
+}
+
 func TestWithTransport_Nil(t *testing.T) {
 	if _, err := mangoplus.NewClient(mangoplus.WithTransport(nil)); err == nil {
 		t.Fatal("NewClient(WithTransport(nil)) returned nil error, want non-nil")

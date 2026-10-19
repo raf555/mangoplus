@@ -103,7 +103,7 @@ func newClient(opts *clientOptions) (*Client, error) {
 
 	if opts.cookieJar != nil {
 		c.httpClient.Jar = opts.cookieJar
-	} else {
+	} else if c.httpClient.Jar == nil {
 		toples, err := cookiejar.New(&cookiejar.Options{PublicSuffixList: publicsuffix.List})
 		if err != nil {
 			return nil, err
@@ -230,14 +230,16 @@ func (c *Client) NewRequest(ctx context.Context, method string, u string, opts .
 		err error
 	)
 
-	if strings.HasPrefix(u, "/") {
-		uri, err = c.baseURL.Parse(u)
-	} else {
-		uri, err = url.Parse(u)
-	}
-
+	uri, err = url.Parse(u)
 	if err != nil {
 		return nil, err
+	}
+
+	if strings.HasPrefix(u, "/") {
+		// JoinPath keeps the base URL path (e.g. /api), unlike Parse which replaces it.
+		rawQuery := uri.RawQuery
+		uri = c.baseURL.JoinPath(uri.Path)
+		uri.RawQuery = rawQuery
 	}
 
 	reqOpts := &requestOptions{}
