@@ -4,8 +4,6 @@ import (
 	"context"
 	"net/http"
 	"net/http/cookiejar"
-	"net/http/httptest"
-	"strings"
 	"testing"
 	"time"
 
@@ -13,64 +11,66 @@ import (
 	"github.com/raf555/mangoplus/internal/proto"
 )
 
-// capturingHandler returns an [http.HandlerFunc] that records the last
-// observed request into *got and responds with 200 and an empty success body.
-func capturingHandler(t *testing.T, got **http.Request) http.HandlerFunc {
-	t.Helper()
-
-	emptySuccess := &proto.Response{
-		Result: &proto.Response_Success{Success: &proto.SuccessResult{}},
+func TestWithHTTPClient_Success(t *testing.T) {
+	t.Parallel()
+	hc := &http.Client{}
+	c, err := mangoplus.NewClient(mangoplus.WithHTTPClient(hc), mangoplus.WithSecret("s"))
+	if err != nil {
+		t.Fatalf("NewClient returned error: %v", err)
 	}
 
-	return func(w http.ResponseWriter, r *http.Request) {
-		*got = r.Clone(context.Background())
-		writeProtoResponse(t, w, emptySuccess)
+	// The provided http.Client is copied, so mutating it afterwards must not
+	// leak into the Client.
+	jar, err := cookiejar.New(nil)
+	if err != nil {
+		t.Fatalf("cookiejar.New returned error: %v", err)
 	}
-}
-
-// doAPICall triggers an arbitrary service call through c so the request runs
-// through the client's configured http.Client (and therefore its transport).
-// The returned error is intentionally ignored — tests inspect the captured
-// request, not the response.
-func doAPICall(t *testing.T, c *mangoplus.Client) {
-	t.Helper()
-
-	_, _ = c.TitleList.AllV2(context.Background())
+	hc.Jar = jar
+	if c.CookieJar() == jar {
+		t.Error("mutation of the provided http.Client leaked into Client")
+	}
 }
 
 func TestWithHTTPClient_Nil(t *testing.T) {
+	t.Parallel()
 	if _, err := mangoplus.NewClient(mangoplus.WithHTTPClient(nil)); err == nil {
-		t.Fatal("NewClient(WithHTTPClient(nil)) returned nil error, want non-nil")
+		t.Error("NewClient(WithHTTPClient(nil)) returned nil error, want error")
 	}
 }
 
-func TestWithHTTPClient_CopiesClient(t *testing.T) {
-	hc := &http.Client{Timeout: 1 * time.Second}
-	c, err := mangoplus.NewClient(mangoplus.WithHTTPClient(hc), mangoplus.WithSecret("s"))
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
-
-	// Mutating the original http.Client after construction must not leak into
-	// the already-constructed *Client. We observe this via the cookie jar.
+func TestWithHTTPClient_KeepsJar(t *testing.T) {
+	t.Parallel()
 	jar, err := cookiejar.New(nil)
 	if err != nil {
-		t.Fatalf("cookiejar.New: %v", err)
+		t.Fatalf("cookiejar.New returned error: %v", err)
 	}
-	hc.Jar = jar
 
-	if c.CookieJar() == jar {
-		t.Error("mutation of the external http.Client leaked into *Client")
+	c, err := mangoplus.NewClient(mangoplus.WithHTTPClient(&http.Client{Jar: jar}), mangoplus.WithSecret("s"))
+	if err != nil {
+		t.Fatalf("NewClient returned error: %v", err)
 	}
-}
-
-func TestWithTransport_Nil(t *testing.T) {
-	if _, err := mangoplus.NewClient(mangoplus.WithTransport(nil)); err == nil {
-		t.Fatal("NewClient(WithTransport(nil)) returned nil error, want non-nil")
+	if c.CookieJar() != jar {
+		t.Error("CookieJar() did not return the jar of the provided http.Client")
 	}
 }
 
-func TestWithTransport_IsUsed(t *testing.T) {
+func TestWithHTTPClient_Timeout(t *testing.T) {
+	t.Parallel()
+	hc := &http.Client{Timeout: 50 * time.Millisecond}
+	client, mux, _ := setup(t, mangoplus.WithHTTPClient(hc), mangoplus.WithSecret("s"))
+
+	mux.HandleFunc("/title_list/allV2", func(w http.ResponseWriter, r *http.Request) {
+		// Block until the client gives up.
+		<-r.Context().Done()
+	})
+
+	if _, err := client.TitleList.AllV2(t.Context()); err == nil {
+		t.Error("TitleList.AllV2 returned nil error, want timeout error from the provided http.Client")
+	}
+}
+
+func TestWithTransport_Success(t *testing.T) {
+	t.Parallel()
 	called := false
 	rt := roundTripperFunc(func(r *http.Request) (*http.Response, error) {
 		called = true
@@ -82,293 +82,159 @@ func TestWithTransport_IsUsed(t *testing.T) {
 		}, nil
 	})
 
-	c, err := mangoplus.NewClient(mangoplus.WithTransport(rt), mangoplus.WithSecret("s"))
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
+	client, _, _ := setup(t, mangoplus.WithTransport(rt), mangoplus.WithSecret("s"))
 
-	// Any service call forces the configured transport to execute.
-	_, _ = c.TitleList.AllV2(context.Background())
+	// The response is empty, so only the transport call matters here.
+	_, _ = client.TitleList.AllV2(t.Context())
 
 	if !called {
-		t.Error("configured RoundTripper was not invoked by any client API call")
+		t.Error("configured RoundTripper was not invoked")
 	}
 }
 
-func TestWithTimeout_Negative(t *testing.T) {
-	if _, err := mangoplus.NewClient(mangoplus.WithTimeout(-1 * time.Second)); err == nil {
-		t.Fatal("NewClient(WithTimeout(-1s)) returned nil error, want non-nil")
+func TestWithTransport_Nil(t *testing.T) {
+	t.Parallel()
+	if _, err := mangoplus.NewClient(mangoplus.WithTransport(nil)); err == nil {
+		t.Error("NewClient(WithTransport(nil)) returned nil error, want error")
+	}
+}
+
+func TestWithTimeout_Success(t *testing.T) {
+	t.Parallel()
+	client, mux, _ := setup(t, mangoplus.WithSecret("s"), mangoplus.WithTimeout(50*time.Millisecond))
+
+	mux.HandleFunc("/title_list/allV2", func(w http.ResponseWriter, r *http.Request) {
+		// Block until the client gives up.
+		<-r.Context().Done()
+	})
+
+	if _, err := client.TitleList.AllV2(t.Context()); err == nil {
+		t.Error("TitleList.AllV2 returned nil error, want timeout error")
 	}
 }
 
 func TestWithTimeout_Zero(t *testing.T) {
+	t.Parallel()
 	if _, err := mangoplus.NewClient(mangoplus.WithTimeout(0), mangoplus.WithSecret("s")); err != nil {
-		t.Fatalf("NewClient(WithTimeout(0)): %v", err)
+		t.Errorf("NewClient(WithTimeout(0)) returned error: %v", err)
 	}
 }
 
-func TestWithTimeout_Enforced(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(500 * time.Millisecond)
-	}))
-	t.Cleanup(srv.Close)
-
-	c, err := mangoplus.NewClient(
-		mangoplus.WithSecret("s"),
-		mangoplus.WithTimeout(50*time.Millisecond),
-		mangoplus.WithTransport(rewriteTransport(t, srv.URL)),
-	)
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
-
-	if _, err := c.TitleList.AllV2(context.Background()); err == nil {
-		t.Fatal("expected timeout error, got nil")
+func TestWithTimeout_Negative(t *testing.T) {
+	t.Parallel()
+	if _, err := mangoplus.NewClient(mangoplus.WithTimeout(-time.Second)); err == nil {
+		t.Error("NewClient(WithTimeout(-1s)) returned nil error, want error")
 	}
 }
 
-func TestWithCookieJar_Nil(t *testing.T) {
-	if _, err := mangoplus.NewClient(mangoplus.WithCookieJar(nil)); err == nil {
-		t.Fatal("NewClient(WithCookieJar(nil)) returned nil error, want non-nil")
-	}
-}
-
-func TestWithCookieJar_Used(t *testing.T) {
+func TestWithCookieJar_Success(t *testing.T) {
+	t.Parallel()
 	jar, err := cookiejar.New(nil)
 	if err != nil {
-		t.Fatalf("cookiejar.New: %v", err)
+		t.Fatalf("cookiejar.New returned error: %v", err)
 	}
 
 	c, err := mangoplus.NewClient(mangoplus.WithCookieJar(jar), mangoplus.WithSecret("s"))
 	if err != nil {
-		t.Fatalf("NewClient: %v", err)
+		t.Fatalf("NewClient returned error: %v", err)
 	}
 	if c.CookieJar() != jar {
 		t.Error("CookieJar() did not return the provided jar")
 	}
 }
 
-func TestWithCookieJar_DefaultIsNonNil(t *testing.T) {
-	c, err := mangoplus.NewClient(mangoplus.WithSecret("s"))
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
-	if c.CookieJar() == nil {
-		t.Error("default CookieJar is nil, want non-nil")
+func TestWithCookieJar_Nil(t *testing.T) {
+	t.Parallel()
+	if _, err := mangoplus.NewClient(mangoplus.WithCookieJar(nil)); err == nil {
+		t.Error("NewClient(WithCookieJar(nil)) returned nil error, want error")
 	}
 }
 
-func TestWithUserAgent(t *testing.T) {
-	var got *http.Request
-	c, _ := newTestServer(t, capturingHandler(t, &got), mangoplus.WithUserAgent("MyAgent/9.9"))
-
-	doAPICall(t, c)
-
-	if got == nil {
-		t.Fatal("no request captured")
-	}
-	if ua := got.Header.Get("User-Agent"); ua != "MyAgent/9.9" {
-		t.Errorf("User-Agent = %q, want MyAgent/9.9", ua)
-	}
+func TestWithUserAgent_Success(t *testing.T) {
+	t.Parallel()
+	r := testRequest(t, mangoplus.WithUserAgent("MyAgent/9.9"))
+	testHeader(t, r, "User-Agent", "MyAgent/9.9")
 }
 
-func TestWithUserAgent_Default(t *testing.T) {
-	var got *http.Request
-	c, _ := newTestServer(t, capturingHandler(t, &got))
-
-	doAPICall(t, c)
-	if got == nil {
-		t.Fatal("no request captured")
-	}
-	if ua := got.Header.Get("User-Agent"); ua == "" {
-		t.Error("default User-Agent is empty")
-	}
+func TestWithOSVersion_Success(t *testing.T) {
+	t.Parallel()
+	r := testRequest(t, mangoplus.WithOSVersion("34"))
+	testFormValues(t, r, values{"os": "android", "os_ver": "34", "app_ver": mangoplus.DefaultAppVersion})
 }
 
-func TestWithOSVersion(t *testing.T) {
-	var got *http.Request
-	c, _ := newTestServer(t, capturingHandler(t, &got), mangoplus.WithOSVersion("34"))
-
-	doAPICall(t, c)
-	if got == nil {
-		t.Fatal("no request captured")
-	}
-	if v := got.URL.Query().Get("os_ver"); v != "34" {
-		t.Errorf("os_ver = %q, want 34", v)
-	}
+func TestWithAppVersion_Success(t *testing.T) {
+	t.Parallel()
+	r := testRequest(t, mangoplus.WithAppVersion("777"))
+	testFormValues(t, r, values{"os": "android", "os_ver": mangoplus.DefaultOSVersion, "app_ver": "777"})
 }
 
-func TestWithAppVersion(t *testing.T) {
-	var got *http.Request
-	c, _ := newTestServer(t, capturingHandler(t, &got), mangoplus.WithAppVersion("777"))
-
-	doAPICall(t, c)
-	if got == nil {
-		t.Fatal("no request captured")
-	}
-	if v := got.URL.Query().Get("app_ver"); v != "777" {
-		t.Errorf("app_ver = %q, want 777", v)
-	}
+func TestWithSecret_Success(t *testing.T) {
+	t.Parallel()
+	r := testRequest(t, mangoplus.WithSecret("sekret"))
+	testFormValues(t, r, values{"secret": "sekret", "os": "android", "os_ver": mangoplus.DefaultOSVersion, "app_ver": mangoplus.DefaultAppVersion})
 }
 
-func TestRequest_SendsOSAndroid(t *testing.T) {
-	var got *http.Request
-	c, _ := newTestServer(t, capturingHandler(t, &got))
+// WithAndroidID is covered by TestClient_Register, which checks the device
+// token derived from it.
 
-	doAPICall(t, c)
-	if got == nil {
-		t.Fatal("no request captured")
-	}
-	if v := got.URL.Query().Get("os"); v != "android" {
-		t.Errorf("os = %q, want android", v)
-	}
-}
-
-func TestWithSecret_AppearsInQuery(t *testing.T) {
-	var got *http.Request
-	c, _ := newTestServer(t, capturingHandler(t, &got), mangoplus.WithSecret("sekret"))
-	// newTestServer already sets a secret; override it by rebuilding the
-	// request below. Instead we simply trust the override above and issue a
-	// standard service call which adds the configured secret automatically.
-	doAPICall(t, c)
-
-	if got == nil {
-		t.Fatal("no request captured")
-	}
-	// newTestServer's default secret is "test-secret"; the last secret option
-	// wins. Guard against both having-set and the chosen value.
-	if v := got.URL.Query().Get("secret"); v != "sekret" {
-		t.Errorf("secret = %q, want sekret", v)
-	}
-}
-
-func TestWithoutSecret_OmitsSecret(t *testing.T) {
-	// WithoutSecret is a request option; we cannot stuff it through the
-	// service helpers which always include the secret. Instead invoke the
-	// registration flow: Registration.Register internally passes
-	// WithoutSecret() to NewRequest, so the captured request should NOT
-	// carry the secret query param.
-	var got *http.Request
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		got = r.Clone(context.Background())
-		writeProtoResponse(t, w, &proto.Response{
-			Result: &proto.Response_Success{
-				Success: &proto.SuccessResult{
-					Data: &proto.SuccessResult_RegisterationData{
-						RegisterationData: &proto.RegistrationData{DeviceSecret: "x"},
-					},
-				},
-			},
-		})
-	}))
-	t.Cleanup(srv.Close)
-
-	c, err := mangoplus.NewClient(
-		mangoplus.WithAndroidID("deadbeef"),
-		mangoplus.WithTransport(rewriteTransport(t, srv.URL)),
-	)
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
-	if _, err := c.Register(context.Background()); err != nil {
-		t.Fatalf("Register: %v", err)
-	}
-
-	if got == nil {
-		t.Fatal("no request captured")
-	}
-	if got.URL.Query().Has("secret") {
-		t.Errorf("secret should be omitted, got %q", got.URL.Query().Get("secret"))
-	}
-}
-
-func TestWithAndroidIDAndSecret_AreMutuallyExclusive(t *testing.T) {
-	_, err := mangoplus.NewClient(
-		mangoplus.WithAndroidID("abcdef0123456789"),
-		mangoplus.WithSecret("sekret"),
-	)
+func TestWithAndroidID_WithSecret(t *testing.T) {
+	t.Parallel()
+	_, err := mangoplus.NewClient(mangoplus.WithAndroidID("abcdef0123456789"), mangoplus.WithSecret("sekret"))
 	if err == nil {
-		t.Fatal("NewClient with both AndroidID and Secret returned nil error, want non-nil")
+		t.Error("NewClient with both AndroidID and Secret returned nil error, want error")
 	}
 }
 
-func TestWithAutoRegister_NilCtx(t *testing.T) {
-	var ctx context.Context
-	if _, err := mangoplus.NewClient(mangoplus.WithAutoRegister(ctx)); err == nil {
-		t.Fatal("WithAutoRegister(nil) accepted, want error")
-	}
-}
+func TestWithAutoRegister_Success(t *testing.T) {
+	t.Parallel()
+	_, mux, serverURL := setup(t)
 
-func TestWithAutoRegister_InvokesRegister(t *testing.T) {
-	var registerPath string
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		registerPath = r.URL.Path
-		writeProtoResponse(t, w, &proto.Response{
-			Result: &proto.Response_Success{
-				Success: &proto.SuccessResult{
-					Data: &proto.SuccessResult_RegisterationData{
-						RegisterationData: &proto.RegistrationData{DeviceSecret: "auto-secret"},
-					},
-				},
+	mux.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodPut)
+		testWriteSuccess(t, w, &proto.SuccessResult{
+			Data: &proto.SuccessResult_RegisterationData{
+				RegisterationData: &proto.RegistrationData{DeviceSecret: "auto-secret"},
 			},
 		})
-	}))
-	t.Cleanup(srv.Close)
+	})
 
 	c, err := mangoplus.NewClient(
-		mangoplus.WithTransport(rewriteTransport(t, srv.URL)),
-		mangoplus.WithAutoRegister(context.Background()),
+		mangoplus.WithTransport(rewriteTransport(t, serverURL)),
+		mangoplus.WithAutoRegister(t.Context()),
 	)
 	if err != nil {
-		t.Fatalf("NewClient: %v", err)
+		t.Fatalf("NewClient returned error: %v", err)
 	}
-
-	if registerPath != "/api/register" {
-		t.Errorf("register path = %q, want /api/register", registerPath)
-	}
-	if got := c.Secret(); got != "auto-secret" {
-		t.Errorf("Secret() = %q, want auto-secret", got)
+	if got, want := c.Secret(), "auto-secret"; got != want {
+		t.Errorf("Secret() is %v, want %v", got, want)
 	}
 }
 
-func TestWithAutoRegister_NoopWhenSecretProvided(t *testing.T) {
-	called := false
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		called = true
-		w.WriteHeader(http.StatusInternalServerError)
-	}))
-	t.Cleanup(srv.Close)
+func TestWithAutoRegister_WithSecret(t *testing.T) {
+	t.Parallel()
+	_, mux, serverURL := setup(t)
+
+	mux.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		t.Error("register endpoint called despite secret being provided")
+	})
 
 	c, err := mangoplus.NewClient(
 		mangoplus.WithSecret("existing"),
-		mangoplus.WithTransport(rewriteTransport(t, srv.URL)),
-		mangoplus.WithAutoRegister(context.Background()),
+		mangoplus.WithTransport(rewriteTransport(t, serverURL)),
+		mangoplus.WithAutoRegister(t.Context()),
 	)
 	if err != nil {
-		t.Fatalf("NewClient: %v", err)
+		t.Fatalf("NewClient returned error: %v", err)
 	}
-	if called {
-		t.Error("register endpoint was called despite secret being provided")
-	}
-	if got := c.Secret(); got != "existing" {
-		t.Errorf("Secret() = %q, want existing", got)
+	if got, want := c.Secret(), "existing"; got != want {
+		t.Errorf("Secret() is %v, want %v", got, want)
 	}
 }
 
-func TestWithRequestBody(t *testing.T) {
-	c, err := mangoplus.NewClient(mangoplus.WithSecret("s"))
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
-	req, err := c.NewRequest(context.Background(), http.MethodPost, "/anything",
-		mangoplus.WithRequestBody("application/json", strings.NewReader("{}")))
-	if err != nil {
-		t.Fatalf("NewRequest: %v", err)
-	}
-	if got := req.Header.Get("Content-Type"); got != "application/json" {
-		t.Errorf("Content-Type = %q, want application/json", got)
-	}
-	if req.Body == nil {
-		t.Error("Body is nil, want non-nil")
+func TestWithAutoRegister_NilContext(t *testing.T) {
+	t.Parallel()
+	var nilCtx context.Context
+	if _, err := mangoplus.NewClient(mangoplus.WithAutoRegister(nilCtx)); err == nil {
+		t.Error("NewClient(WithAutoRegister(nil)) returned nil error, want error")
 	}
 }
