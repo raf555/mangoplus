@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/raf555/mangoplus/internal/proto"
 	"github.com/raf555/mangoplus/internal/slicex"
@@ -29,7 +30,15 @@ type ProtoError struct {
 }
 
 func (p *ProtoError) Error() string {
-	return fmt.Sprintf("mangoplus: proto error: %s: %s", p.EnglishPopup.Subject, p.EnglishPopup.Body)
+	var b strings.Builder
+	b.WriteString("mangoplus: proto error")
+	for _, part := range []string{string(p.Action), p.EnglishPopup.Subject, p.EnglishPopup.Body} {
+		if part != "" {
+			b.WriteString(": ")
+			b.WriteString(part)
+		}
+	}
+	return b.String()
 }
 
 var (
@@ -44,6 +53,9 @@ var (
 
 	// ErrInvalidUserAccess is an error when MangaPlus returned proto error with Invalid user subject.
 	ErrInvalidUserAccess = errors.New("mangoplus: invalid user access")
+
+	// ErrMaintenance is an error when MangaPlus returned proto error with MAINTENANCE action.
+	ErrMaintenance = errors.New("mangoplus: maintenance")
 )
 
 func (p *ProtoError) Is(target error) bool {
@@ -56,6 +68,8 @@ func (p *ProtoError) Is(target error) bool {
 		return p.EnglishPopup.Subject == "NEW VERSION AVAILABLE"
 	case ErrInvalidUserAccess:
 		return p.EnglishPopup.Subject == "Invalid user"
+	case ErrMaintenance:
+		return p.Action == ErrorActionMaintenance
 	}
 	return false
 }
