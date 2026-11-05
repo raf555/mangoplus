@@ -33,7 +33,8 @@ func (p *ProtoError) Error() string {
 	var b strings.Builder
 	b.WriteString("mangoplus: proto error")
 
-	// DEFAULT is set on most errors, so printing it adds nothing.
+	// DEFAULT is kinda meaningless, so we omit it.
+	// It's usually used for most MangaPlus common errors.
 	action := string(p.Action)
 	if p.Action == ErrorActionDefault {
 		action = ""
