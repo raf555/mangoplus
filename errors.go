@@ -32,7 +32,15 @@ type ProtoError struct {
 func (p *ProtoError) Error() string {
 	var b strings.Builder
 	b.WriteString("mangoplus: proto error")
-	for _, part := range []string{string(p.Action), p.EnglishPopup.Subject, p.EnglishPopup.Body} {
+
+	// DEFAULT is kinda meaningless, so we omit it.
+	// It's usually used for most MangaPlus common errors.
+	action := string(p.Action)
+	if p.Action == ErrorActionDefault {
+		action = ""
+	}
+
+	for _, part := range []string{action, p.EnglishPopup.Subject, p.EnglishPopup.Body} {
 		if part != "" {
 			b.WriteString(": ")
 			b.WriteString(part)
