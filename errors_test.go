@@ -25,10 +25,18 @@ func TestProtoError_Error(t *testing.T) {
 		{
 			name: "action, subject and body",
 			err: &mangoplus.ProtoError{
+				Action:       mangoplus.ErrorActionUnauthorized,
+				EnglishPopup: mangoplus.PopupOsDefault{Subject: "Invalid user", Body: "Please log in again."},
+			},
+			want: "mangoplus: proto error: UNAUTHORIZED: Invalid user: Please log in again.",
+		},
+		{
+			name: "default action omitted",
+			err: &mangoplus.ProtoError{
 				Action:       mangoplus.ErrorActionDefault,
 				EnglishPopup: mangoplus.PopupOsDefault{Subject: "Not Found", Body: "This title does not exist."},
 			},
-			want: "mangoplus: proto error: DEFAULT: Not Found: This title does not exist.",
+			want: "mangoplus: proto error: Not Found: This title does not exist.",
 		},
 		{
 			name: "action only",
