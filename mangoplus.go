@@ -43,6 +43,7 @@ type Client struct {
 	TitleList    *TitleListService
 	Title        *TitleService
 	Manga        *MangaService
+	Comment      *CommentService
 }
 
 type service struct {
@@ -71,6 +72,7 @@ func NewClient(opts ...ClientOptionsFunc) (*Client, error) {
 	c.TitleList = (*TitleListService)(&c.common)
 	c.Title = (*TitleService)(&c.common)
 	c.Manga = (*MangaService)(&c.common)
+	c.Comment = (*CommentService)(&c.common)
 
 	if co.autoRegister {
 		_, err = c.Register(co.registCtx)
