@@ -25,13 +25,18 @@ func redactURL(rawURL string) string {
 		return "****"
 	}
 
-	u.RawQuery = maskSecretQuery(u.RawQuery)
+	u.RawQuery = MaskSecretQuery(u.RawQuery)
 	return u.String()
 }
 
-// maskSecretQuery masks the secret value in rawQuery, keeping other params as-is.
+// MaskSecretQuery masks the secret param in rawQuery (a [net/url.URL.RawQuery]),
+// keeping other params and their order as-is. It applies the same masking as [WithRedactedErrors],
+// e.g. "os=android&secret=0123456789abcdef" becomes "os=android&secret=****cdef".
+//
+// Use it to keep the secret out of places the client doesn't control, such as traced request URLs.
+//
 // It edits the raw query instead of re-encoding it, since encoding would escape the mask's '*'.
-func maskSecretQuery(rawQuery string) string {
+func MaskSecretQuery(rawQuery string) string {
 	var b strings.Builder
 	b.Grow(len(rawQuery))
 	first := true
