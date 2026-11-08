@@ -2,8 +2,11 @@ package mangoplus_test
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/http/cookiejar"
+	"net/url"
+	"strings"
 	"testing"
 	"time"
 
@@ -236,5 +239,52 @@ func TestWithAutoRegister_NilContext(t *testing.T) {
 	var nilCtx context.Context
 	if _, err := mangoplus.NewClient(mangoplus.WithAutoRegister(nilCtx)); err == nil {
 		t.Error("NewClient(WithAutoRegister(nil)) returned nil error, want error")
+	}
+}
+
+func TestWithRedactedErrors(t *testing.T) {
+	t.Parallel()
+
+	errBoom := errors.New("boom")
+	failing := roundTripperFunc(func(*http.Request) (*http.Response, error) {
+		return nil, errBoom
+	})
+	redacted := []mangoplus.ClientOptionsFunc{mangoplus.WithRedactedErrors()}
+
+	tests := []struct {
+		name    string
+		secret  string
+		opts    []mangoplus.ClientOptionsFunc
+		wantURL string // expected secret query param in url.Error.URL
+	}{
+		{"default keeps secret", "0123456789abcdef", nil, "secret=0123456789abcdef"},
+		{"masked keeps last 4", "0123456789abcdef", redacted, "secret=****cdef"},
+		{"short secret fully masked", "s3cr3t", redacted, "secret=****"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			opts := append([]mangoplus.ClientOptionsFunc{mangoplus.WithTransport(failing), mangoplus.WithSecret(tt.secret)}, tt.opts...)
+			client, _, _ := setup(t, opts...)
+
+			_, err := client.TitleList.AllV2(t.Context())
+			if !errors.Is(err, errBoom) {
+				t.Fatalf("AllV2 error = %v, want wrapping %v", err, errBoom)
+			}
+
+			uerr, ok := errors.AsType[*url.Error](err)
+			if !ok {
+				t.Fatalf("AllV2 error = %T, want *url.Error in chain", err)
+			}
+			if !strings.Contains(uerr.URL, "os=android") {
+				t.Errorf("url.Error.URL = %q, want other query params kept", uerr.URL)
+			}
+
+			if !strings.HasSuffix(uerr.URL, tt.wantURL) {
+				t.Errorf("url.Error.URL = %q, want suffix %q", uerr.URL, tt.wantURL)
+			}
+		})
 	}
 }

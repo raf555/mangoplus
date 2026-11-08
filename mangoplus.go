@@ -35,6 +35,8 @@ type Client struct {
 	androidID string
 	secret    string
 
+	redactErrors bool
+
 	common service
 
 	// Services
@@ -151,6 +153,8 @@ func newClient(opts *clientOptions) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	c.redactErrors = opts.redactErrors
 
 	c.common.client = c
 
@@ -279,6 +283,9 @@ func (c *Client) NewRequest(ctx context.Context, method string, u string, opts .
 func (c *Client) rawProtoDo(req *http.Request) (*proto.Response, error) {
 	res, err := c.httpClient.Do(req)
 	if err != nil {
+		if c.redactErrors {
+			return nil, redactURLError(err)
+		}
 		return nil, err
 	}
 	defer res.Body.Close()

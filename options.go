@@ -34,6 +34,8 @@ type clientOptions struct {
 
 	autoRegister bool
 	registCtx    context.Context
+
+	redactErrors bool
 }
 
 // ClientOptionsFunc is a functional option for providing configuration options to a [Client].
@@ -166,6 +168,22 @@ func WithAutoRegister(ctx context.Context) ClientOptionsFunc {
 
 		co.autoRegister = true
 		co.registCtx = ctx
+		return nil
+	}
+}
+
+// WithRedactedErrors returns a [ClientOptionsFunc] that masks the client secret
+// in errors returned by the underlying [http.Client].
+//
+// [http.Client.Do] wraps request failures in a [*net/url.Error] carrying the full
+// request URL, which includes the secret query param. With this option, the
+// secret value in that URL is masked down to its last 4 characters behind a
+// fixed "****" (e.g. "****cdef"), so it doesn't leak into logs.
+//
+// Note: this option may be removed in a future release, with masking becoming the default behavior.
+func WithRedactedErrors() ClientOptionsFunc {
+	return func(co *clientOptions) error {
+		co.redactErrors = true
 		return nil
 	}
 }
