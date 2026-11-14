@@ -1,6 +1,10 @@
 package mangoplus
 
-import "github.com/raf555/mangoplus/internal/proto"
+import (
+	"net/url"
+
+	"github.com/raf555/mangoplus/internal/proto"
+)
 
 type Language string
 
@@ -85,5 +89,12 @@ func LanguageToLang(lang Language) (Lang, bool) {
 		return LangGerman, true
 	default:
 		return "", false
+	}
+}
+
+func englishParams() url.Values {
+	return url.Values{
+		"lang":  {string(LangEnglish)},
+		"clang": {string(LangEnglish)},
 	}
 }

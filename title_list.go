@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/raf555/mangoplus/internal/proto"
@@ -117,9 +118,77 @@ func (t *TitleListService) searchView(ctx context.Context, u *url.URL) (SearchVi
 	return searchViewFromProto(v), nil
 }
 
-func englishParams() url.Values {
-	return url.Values{
-		"lang":  {string(LangEnglish)},
-		"clang": {string(LangEnglish)},
+type RankingType string
+
+const (
+	RankingTypeHottest   RankingType = "hottest"
+	RankingTypeTrending  RankingType = "trending"
+	RankingTypeCompleted RankingType = "completed"
+)
+
+func rankingTypeFromProto(pb proto.RankingTabType) RankingType {
+	val, ok := proto.RankingTabType_name[int32(pb)]
+	if !ok {
+		return ""
 	}
+	return RankingType(strings.ToLower(val))
+}
+
+type TitleRankingViewV2 struct {
+	Banners      []Banner
+	UpdatedAt    time.Time
+	RankedTitles []TitleRankingGroup
+}
+
+func titleRankingViewV2FromProto(pb *proto.TitleRankingViewV2) TitleRankingViewV2 {
+	return TitleRankingViewV2{
+		Banners:      slicex.Map(pb.GetRankingBanners(), bannerFromProto),
+		UpdatedAt:    timex.Unix(int64(pb.GetUpdatedTimeStamp())),
+		RankedTitles: slicex.Map(pb.GetRankedTitles(), titleRankingGroupFromProto),
+	}
+}
+
+type TitleRankingGroup struct {
+	OriginalTitleID int
+	Titles          []Title
+	Score           int
+}
+
+func titleRankingGroupFromProto(pb *proto.TitleRankingGroup) TitleRankingGroup {
+	return TitleRankingGroup{
+		OriginalTitleID: int(pb.GetOriginalTitleId()),
+		Titles:          slicex.Map(pb.GetTitles(), titleFromProto),
+		Score:           int(pb.GetScore()),
+	}
+}
+
+func (t *TitleListService) RankingV2(ctx context.Context, typ RankingType, lang Language) (TitleRankingViewV2, error) {
+	clang, ok := LanguageToLang(lang)
+	if !ok {
+		return TitleRankingViewV2{}, fmt.Errorf("mangoplus: unsupported language %q", lang)
+	}
+
+	u := t.client.baseURL.JoinPath("/title_list/rankingV2")
+
+	uParams := englishParams()
+	uParams.Set("clang", string(clang))
+	uParams.Set("type", string(typ))
+	u.RawQuery = uParams.Encode()
+
+	req, err := t.client.NewRequest(ctx, http.MethodGet, u.String())
+	if err != nil {
+		return TitleRankingViewV2{}, err
+	}
+
+	res, err := t.client.protoDo(req)
+	if err != nil {
+		return TitleRankingViewV2{}, err
+	}
+
+	v := res.GetTitleRankingViewV2()
+	if v == nil {
+		return TitleRankingViewV2{}, errors.New("mangoplus: unexpected nil title ranking view")
+	}
+
+	return titleRankingViewV2FromProto(v), nil
 }

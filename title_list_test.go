@@ -292,6 +292,15 @@ func TestTitleListService_Search_Success(t *testing.T) {
 		testWriteSuccess(t, w, &proto.SuccessResult{
 			Data: &proto.SuccessResult_SearchView{
 				SearchView: &proto.SearchView{
+					TopSearchBanners: []*proto.Banner{
+						{
+							Id:       3,
+							ImageUrl: "https://img/top",
+							Action: &proto.TransitionAction{
+								Url: "mangaplus://open/detail?id=2",
+							},
+						},
+					},
 					Contents: []*proto.SearchView_Contents{
 						{
 							Banner: &proto.Banner{ImageUrl: "https://img/banner"},
@@ -347,8 +356,17 @@ func TestTitleListService_Search_Success(t *testing.T) {
 	}
 
 	want := mangoplus.SearchView{
+		TopBanners: []mangoplus.Banner{
+			{
+				ID:        3,
+				ImageURL:  "https://img/top",
+				ActionURL: "mangaplus://open/detail?id=2",
+			},
+		},
 		Contents: []mangoplus.SearchViewContents{
-			{},
+			{
+				Banner: &mangoplus.Banner{ImageURL: "https://img/banner"},
+			},
 			{
 				ChapterPageList: &mangoplus.ChapterPageList{
 					ListName: "Manga Previews",
@@ -417,5 +435,114 @@ func TestTitleListService_Search_NilView(t *testing.T) {
 
 	if _, err := client.TitleList.Search(t.Context(), mangoplus.LanguageEnglish); err == nil {
 		t.Error("TitleList.Search returned nil error for empty success body, want error")
+	}
+}
+
+func TestTitleListService_RankingV2_Success(t *testing.T) {
+	t.Parallel()
+	client, mux, _ := setup(t, mangoplus.WithSecret("s"))
+
+	mux.HandleFunc("/title_list/rankingV2", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, http.MethodGet)
+		testFormValues(t, r, values{
+			"secret":  "s",
+			"os":      "android",
+			"os_ver":  mangoplus.DefaultOSVersion,
+			"app_ver": mangoplus.DefaultAppVersion,
+			"lang":    "eng",
+			"clang":   "ind",
+			"type":    "trending",
+		})
+		testWriteSuccess(t, w, &proto.SuccessResult{
+			Data: &proto.SuccessResult_TitleRankingViewV2{
+				TitleRankingViewV2: &proto.TitleRankingViewV2{
+					RankingBanners: []*proto.Banner{
+						{
+							Id:       5,
+							ImageUrl: "https://img/ranking",
+							Action: &proto.TransitionAction{
+								Url: "mangaplus://open/detail?id=1",
+							},
+						},
+					},
+					UpdatedTimeStamp: 1_700_000_000,
+					RankedTitles: []*proto.TitleRankingGroup{
+						{
+							OriginalTitleId: 100,
+							Titles: []*proto.Title{
+								{
+									TitleId:  1,
+									Name:     "Alpha",
+									Language: proto.Language_INDONESIAN,
+								},
+							},
+							Score: 4321,
+						},
+					},
+				},
+			},
+		})
+	})
+
+	got, err := client.TitleList.RankingV2(t.Context(), mangoplus.RankingTypeTrending, mangoplus.LanguageIndonesian)
+	if err != nil {
+		t.Fatalf("TitleList.RankingV2 returned error: %v", err)
+	}
+
+	want := mangoplus.TitleRankingViewV2{
+		Banners: []mangoplus.Banner{
+			{
+				ID:        5,
+				ImageURL:  "https://img/ranking",
+				ActionURL: "mangaplus://open/detail?id=1",
+			},
+		},
+		UpdatedAt: time.Unix(1_700_000_000, 0),
+		RankedTitles: []mangoplus.TitleRankingGroup{
+			{
+				OriginalTitleID: 100,
+				Titles: []mangoplus.Title{
+					{
+						TitleID:  1,
+						Name:     "Alpha",
+						Language: mangoplus.LanguageIndonesian,
+					},
+				},
+				Score: 4321,
+			},
+		},
+	}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("TitleList.RankingV2 mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestTitleListService_RankingV2_UnsupportedLanguage(t *testing.T) {
+	t.Parallel()
+	client, _, _ := setup(t)
+
+	if _, err := client.TitleList.RankingV2(t.Context(), mangoplus.RankingTypeHottest, "KLINGON"); err == nil {
+		t.Error("TitleList.RankingV2 returned nil error for an unsupported language, want error")
+	}
+}
+
+func TestTitleListService_RankingV2_RequestFailed(t *testing.T) {
+	t.Parallel()
+	testNewRequestAndDoFailure(t, "TitleList.RankingV2", func(ctx context.Context, client *mangoplus.Client) error {
+		_, err := client.TitleList.RankingV2(ctx, mangoplus.RankingTypeHottest, mangoplus.LanguageEnglish)
+		return err
+	})
+}
+
+func TestTitleListService_RankingV2_NilView(t *testing.T) {
+	t.Parallel()
+	client, mux, _ := setup(t)
+
+	mux.HandleFunc("/title_list/rankingV2", func(w http.ResponseWriter, r *http.Request) {
+		testWriteSuccess(t, w, &proto.SuccessResult{})
+	})
+
+	if _, err := client.TitleList.RankingV2(t.Context(), mangoplus.RankingTypeHottest, mangoplus.LanguageEnglish); err == nil {
+		t.Error("TitleList.RankingV2 returned nil error for empty success body, want error")
 	}
 }

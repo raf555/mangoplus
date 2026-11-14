@@ -6,6 +6,7 @@ import (
 )
 
 type SearchView struct {
+	TopBanners     []Banner
 	AllTags        []Tag
 	AllTitlesGroup []AllTitlesGroupV2
 	Contents       []SearchViewContents
@@ -13,6 +14,7 @@ type SearchView struct {
 
 func searchViewFromProto(pb *proto.SearchView) SearchView {
 	return SearchView{
+		TopBanners:     slicex.Map(pb.GetTopSearchBanners(), bannerFromProto),
 		AllTags:        slicex.Map(pb.GetAllTags(), tagFromProto),
 		AllTitlesGroup: slicex.Map(pb.GetAllTitlesGroup(), allTitlesGroupV2FromProto),
 		Contents:       slicex.Map(pb.GetContents(), searchViewContentsFromProto),
@@ -20,12 +22,16 @@ func searchViewFromProto(pb *proto.SearchView) SearchView {
 }
 
 type SearchViewContents struct {
+	Banner          *Banner
 	TitleList       *TitleList
 	ChapterPageList *ChapterPageList
 }
 
 func searchViewContentsFromProto(pb *proto.SearchView_Contents) SearchViewContents {
 	c := SearchViewContents{}
+	if b := pb.GetBanner(); b != nil {
+		c.Banner = new(bannerFromProto(b))
+	}
 	if tl := pb.GetTitleList(); tl != nil {
 		c.TitleList = new(titleListFromProto(tl))
 	}
