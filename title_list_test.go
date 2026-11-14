@@ -341,7 +341,7 @@ func TestTitleListService_Search_Success(t *testing.T) {
 		})
 	})
 
-	got, err := client.TitleList.Search(t.Context())
+	got, err := client.TitleList.Search(t.Context(), mangoplus.LanguageEnglish)
 	if err != nil {
 		t.Fatalf("TitleList.Search returned error: %v", err)
 	}
@@ -390,10 +390,19 @@ func TestTitleListService_Search_Success(t *testing.T) {
 	}
 }
 
+func TestTitleListService_Search_UnsupportedLanguage(t *testing.T) {
+	t.Parallel()
+	client, _, _ := setup(t)
+
+	if _, err := client.TitleList.Search(t.Context(), "KLINGON"); err == nil {
+		t.Error("TitleList.Search returned nil error for an unsupported language, want error")
+	}
+}
+
 func TestTitleListService_Search_RequestFailed(t *testing.T) {
 	t.Parallel()
 	testNewRequestAndDoFailure(t, "TitleList.Search", func(ctx context.Context, client *mangoplus.Client) error {
-		_, err := client.TitleList.Search(ctx)
+		_, err := client.TitleList.Search(ctx, mangoplus.LanguageEnglish)
 		return err
 	})
 }
@@ -406,7 +415,7 @@ func TestTitleListService_Search_NilView(t *testing.T) {
 		testWriteSuccess(t, w, &proto.SuccessResult{})
 	})
 
-	if _, err := client.TitleList.Search(t.Context()); err == nil {
+	if _, err := client.TitleList.Search(t.Context(), mangoplus.LanguageEnglish); err == nil {
 		t.Error("TitleList.Search returned nil error for empty success body, want error")
 	}
 }

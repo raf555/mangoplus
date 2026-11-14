@@ -24,27 +24,66 @@ func languageFromProto(pb proto.Language) Language {
 	return Language(val)
 }
 
-func languageFromMangaPlusLang(lang string) Language {
+type Lang string
+
+const (
+	LangEnglish      Lang = "eng"
+	LangSpanish      Lang = "esp"
+	LangFrench       Lang = "fra"
+	LangIndonesian   Lang = "ind"
+	LangPortugueseBR Lang = "ptb"
+	LangRussian      Lang = "rus"
+	LangThai         Lang = "tha"
+	LangVietnamese   Lang = "vie"
+	LangGerman       Lang = "deu"
+)
+
+func LangToLanguage(lang Lang) (Language, bool) {
 	switch lang {
-	case "eng":
-		return LanguageEnglish
-	case "esp":
-		return LanguageSpanish
-	case "fra":
-		return LanguageFrench
-	case "ind":
-		return LanguageIndonesian
-	case "ptb":
-		return LanguagePortugueseBR
-	case "rus":
-		return LanguageRussian
-	case "tha":
-		return LanguageThai
-	case "vie":
-		return LanguageVietnamese
-	case "deu":
-		return LanguageGerman
+	case LangEnglish:
+		return LanguageEnglish, true
+	case LangSpanish:
+		return LanguageSpanish, true
+	case LangFrench:
+		return LanguageFrench, true
+	case LangIndonesian:
+		return LanguageIndonesian, true
+	case LangPortugueseBR:
+		return LanguagePortugueseBR, true
+	case LangRussian:
+		return LanguageRussian, true
+	case LangThai:
+		return LanguageThai, true
+	case LangVietnamese:
+		return LanguageVietnamese, true
+	case LangGerman:
+		return LanguageGerman, true
 	default:
-		return ""
+		return "", false
+	}
+}
+
+func LanguageToLang(lang Language) (Lang, bool) {
+	switch lang {
+	case LanguageEnglish:
+		return LangEnglish, true
+	case LanguageSpanish:
+		return LangSpanish, true
+	case LanguageFrench:
+		return LangFrench, true
+	case LanguageIndonesian:
+		return LangIndonesian, true
+	case LanguagePortugueseBR:
+		return LangPortugueseBR, true
+	case LanguageRussian:
+		return LangRussian, true
+	case LanguageThai:
+		return LangThai, true
+	case LanguageVietnamese:
+		return LangVietnamese, true
+	case LanguageGerman:
+		return LangGerman, true
+	default:
+		return "", false
 	}
 }

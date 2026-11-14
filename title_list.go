@@ -3,6 +3,7 @@ package mangoplus
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -82,9 +83,17 @@ func (t *TitleListService) AllV3(ctx context.Context, typ TitleListType) (Search
 	return t.searchView(ctx, u)
 }
 
-func (t *TitleListService) Search(ctx context.Context) (SearchView, error) {
+func (t *TitleListService) Search(ctx context.Context, lang Language) (SearchView, error) {
+	clang, ok := LanguageToLang(lang)
+	if !ok {
+		return SearchView{}, fmt.Errorf("mangoplus: unsupported language %q", lang)
+	}
+
 	u := t.client.baseURL.JoinPath("/title_list/search")
-	u.RawQuery = englishParams().Encode()
+
+	uParams := englishParams()
+	uParams.Set("clang", string(clang))
+	u.RawQuery = uParams.Encode()
 
 	return t.searchView(ctx, u)
 }
@@ -110,7 +119,7 @@ func (t *TitleListService) searchView(ctx context.Context, u *url.URL) (SearchVi
 
 func englishParams() url.Values {
 	return url.Values{
-		"lang":  {"eng"},
-		"clang": {"eng"},
+		"lang":  {string(LangEnglish)},
+		"clang": {string(LangEnglish)},
 	}
 }

@@ -49,6 +49,8 @@ func mangaViewerFromProto(pb *proto.MangaViewer) MangaViewer {
 		}
 	}
 
+	titleLanguage, _ := LangToLanguage(Lang(pb.GetTitleLanguage()))
+
 	return MangaViewer{
 		MangaPages:         pages,
 		CurrentChapter:     currentChapter,
@@ -57,7 +59,7 @@ func mangaViewerFromProto(pb *proto.MangaViewer) MangaViewer {
 		ChapterName:        pb.GetChapterName(),
 		NumberOfComments:   int(pb.GetNumberOfComments()),
 		TitleID:            int(pb.GetTitleId()),
-		TitleLanguage:      languageFromMangaPlusLang(pb.GetTitleLanguage()),
+		TitleLanguage:      titleLanguage,
 		AvailableLanguages: slicex.Map(pb.GetTitleAvailableLanguages(), mangaAvailableLanguageFromProto),
 		StartFromRight:     pb.GetStartFromRight(),
 		IsHorizontalOnly:   pb.GetIsHorizontalOnly(),
