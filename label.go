@@ -40,3 +40,15 @@ func labelCodeFromProto(pb proto.LabelCodes) LabelCode {
 	}
 	return LabelCode(val)
 }
+
+type LabelV2 struct {
+	ID       int
+	ImageURL string
+}
+
+func labelV2FromProto(pb *proto.LabelV2) LabelV2 {
+	return LabelV2{
+		ID:       int(pb.GetId()),
+		ImageURL: pb.GetImageUrl(),
+	}
+}

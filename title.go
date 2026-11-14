@@ -50,6 +50,7 @@ type TitleDetailView struct {
 	Tags               []Tag
 	Labels             TitleLabels
 	Label              Label
+	LabelV2            LabelV2
 	ChapterListGroup   []ChapterGroup
 	ChapterListV2      []Chapter
 }
@@ -69,6 +70,7 @@ func titleDetailViewFromProto(pb *proto.TitleDetailView) TitleDetailView {
 		Tags:               slicex.Map(pb.GetTags(), tagFromProto),
 		Labels:             titleLabelsFromProto(pb.GetTitleLabels()),
 		Label:              labelFromProto(pb.GetLabel()),
+		LabelV2:            labelV2FromProto(pb.GetLabelV2()),
 		ChapterListGroup:   slicex.Map(pb.GetChapterListGroup(), chapterGroupFromProto),
 		ChapterListV2:      slicex.Map(pb.GetChapterListV2(), chapterFromProto),
 	}
