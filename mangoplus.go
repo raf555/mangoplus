@@ -47,6 +47,7 @@ type Client struct {
 	Manga        *MangaService
 	Comment      *CommentService
 	Home         *HomeService
+	Settings     *SettingsService
 }
 
 type service struct {
@@ -70,13 +71,7 @@ func NewClient(opts ...ClientOptionsFunc) (*Client, error) {
 		return nil, err
 	}
 
-	// services
-	c.Registration = (*RegistrationService)(&c.common)
-	c.TitleList = (*TitleListService)(&c.common)
-	c.Title = (*TitleService)(&c.common)
-	c.Manga = (*MangaService)(&c.common)
-	c.Comment = (*CommentService)(&c.common)
-	c.Home = (*HomeService)(&c.common)
+	c.bindServices()
 
 	if co.autoRegister {
 		_, err = c.Register(co.registCtx)
@@ -110,7 +105,7 @@ func newClient(opts *clientOptions) (*Client, error) {
 	if opts.cookieJar != nil {
 		c.httpClient.Jar = opts.cookieJar
 	} else if c.httpClient.Jar == nil {
-		toples, err := cookiejar.New(&cookiejar.Options{PublicSuffixList: publicsuffix.List})
+		toples, err := newCookieJar()
 		if err != nil {
 			return nil, err
 		}
@@ -158,9 +153,100 @@ func newClient(opts *clientOptions) (*Client, error) {
 
 	c.redactErrors = opts.redactErrors
 
+	return c, nil
+}
+
+func newCookieJar() (*cookiejar.Jar, error) {
+	return cookiejar.New(&cookiejar.Options{PublicSuffixList: publicsuffix.List})
+}
+
+func (c *Client) bindServices() {
 	c.common.client = c
 
-	return c, nil
+	c.Registration = (*RegistrationService)(&c.common)
+	c.TitleList = (*TitleListService)(&c.common)
+	c.Title = (*TitleService)(&c.common)
+	c.Manga = (*MangaService)(&c.common)
+	c.Comment = (*CommentService)(&c.common)
+	c.Home = (*HomeService)(&c.common)
+	c.Settings = (*SettingsService)(&c.common)
+}
+
+// CloneWithSecret returns a copy of c that sends its requests as the account owning
+// secret, so one registered client can serve many users.
+//
+// The copy keeps c's configuration and shares its transport and connection
+// pool. It gets its own cookie jar, so cookies set for one secret never reach
+// another. c itself is not changed, and both clients are safe for concurrent
+// use.
+//
+// opts override the copied configuration: [WithHTTPClient], [WithTransport],
+// [WithTimeout], [WithCookieJar], [WithUserAgent], [WithOSVersion],
+// [WithAppVersion] and [WithRedactedErrors]. The secret is the argument, so
+// [WithSecret], [WithAndroidID] and [WithAutoRegister] return an error.
+func (c *Client) CloneWithSecret(secret string, opts ...ClientOptionsFunc) (*Client, error) {
+	if secret == "" {
+		return nil, errors.New("mangoplus: secret must not be empty")
+	}
+
+	co := &clientOptions{}
+	for _, opt := range opts {
+		if err := opt(co); err != nil {
+			return nil, err
+		}
+	}
+
+	if co.secret != "" || co.androidID != "" || co.autoRegister {
+		return nil, errors.New("mangoplus: CloneWithSecret does not accept secret, android ID or auto register options")
+	}
+
+	httpClient := *c.httpClient
+	if co.httpClient != nil {
+		httpClient = *co.httpClient
+	}
+
+	if co.transport != nil {
+		httpClient.Transport = co.transport
+	}
+
+	if co.timeout != nil {
+		httpClient.Timeout = *co.timeout
+	}
+
+	if co.cookieJar != nil {
+		httpClient.Jar = co.cookieJar
+	} else {
+		jar, err := newCookieJar()
+		if err != nil {
+			return nil, err
+		}
+		httpClient.Jar = jar
+	}
+
+	cp := *c
+	cp.httpClient = &httpClient
+	cp.secret = secret
+	cp.androidID = ""
+
+	if co.userAgent != "" {
+		cp.userAgent = co.userAgent
+	}
+
+	if co.osVersion != "" {
+		cp.osVersion = co.osVersion
+	}
+
+	if co.appVersion != "" {
+		cp.appVersion = co.appVersion
+	}
+
+	if co.redactErrors {
+		cp.redactErrors = true
+	}
+
+	cp.bindServices()
+
+	return &cp, nil
 }
 
 // CookieJar returns [http.CookieJar] used by [Client].

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"net/http/cookiejar"
 	"net/http/httptest"
 	"net/url"
 	"strings"
@@ -526,5 +527,189 @@ func TestClient_Register_Error(t *testing.T) {
 	}
 	if client.Secret() != "" {
 		t.Errorf("Client.Secret() is %q after failed register, want empty", client.Secret())
+	}
+}
+
+func TestClient_CloneWithSecret_UsesNewSecret(t *testing.T) {
+	t.Parallel()
+	client, mux, _ := setup(t, mangoplus.WithSecret("parent"))
+
+	var secrets []string
+	mux.HandleFunc("/settings_v2", func(w http.ResponseWriter, r *http.Request) {
+		secrets = append(secrets, r.URL.Query().Get("secret"))
+		testWriteSuccess(t, w, &proto.SuccessResult{
+			Data: &proto.SuccessResult_SettingsViewV2{SettingsViewV2: &proto.SettingsViewV2{}},
+		})
+	})
+
+	child, err := client.CloneWithSecret("child")
+	if err != nil {
+		t.Fatalf("Client.CloneWithSecret returned error: %v", err)
+	}
+
+	if _, err := child.Settings.ViewV2(t.Context()); err != nil {
+		t.Fatalf("child Settings.ViewV2 returned error: %v", err)
+	}
+	if _, err := client.Settings.ViewV2(t.Context()); err != nil {
+		t.Fatalf("parent Settings.ViewV2 returned error: %v", err)
+	}
+
+	if diff := cmp.Diff([]string{"child", "parent"}, secrets); diff != "" {
+		t.Errorf("request secrets mismatch (-want +got):\n%s", diff)
+	}
+	if got, want := child.Secret(), "child"; got != want {
+		t.Errorf("child Secret() is %q, want %q", got, want)
+	}
+	if got, want := client.Secret(), "parent"; got != want {
+		t.Errorf("parent Secret() is %q, want %q", got, want)
+	}
+}
+
+func TestClient_CloneWithSecret_EmptySecret(t *testing.T) {
+	t.Parallel()
+	client, _, _ := setup(t, mangoplus.WithSecret("parent"))
+
+	if _, err := client.CloneWithSecret(""); err == nil {
+		t.Error("Client.CloneWithSecret returned nil error for empty secret, want error")
+	}
+}
+
+func TestClient_CloneWithSecret_OwnCookieJar(t *testing.T) {
+	t.Parallel()
+	client, mux, _ := setup(t, mangoplus.WithSecret("parent"))
+
+	cookies := map[string][]string{}
+	mux.HandleFunc("/settings_v2", func(w http.ResponseWriter, r *http.Request) {
+		secret := r.URL.Query().Get("secret")
+		for _, c := range r.Cookies() {
+			cookies[secret] = append(cookies[secret], c.Name+"="+c.Value)
+		}
+		http.SetCookie(w, &http.Cookie{Name: "plus_vw_token", Value: secret, Path: "/"})
+		testWriteSuccess(t, w, &proto.SuccessResult{
+			Data: &proto.SuccessResult_SettingsViewV2{SettingsViewV2: &proto.SettingsViewV2{}},
+		})
+	})
+
+	child, err := client.CloneWithSecret("child")
+	if err != nil {
+		t.Fatalf("Client.CloneWithSecret returned error: %v", err)
+	}
+	if child.CookieJar() == client.CookieJar() {
+		t.Fatal("child shares the parent cookie jar")
+	}
+
+	for _, c := range []*mangoplus.Client{client, client, child, child} {
+		if _, err := c.Settings.ViewV2(t.Context()); err != nil {
+			t.Fatalf("Settings.ViewV2 returned error: %v", err)
+		}
+	}
+
+	want := map[string][]string{
+		"parent": {"plus_vw_token=parent"},
+		"child":  {"plus_vw_token=child"},
+	}
+	if diff := cmp.Diff(want, cookies); diff != "" {
+		t.Errorf("cookies sent per secret mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestClient_CloneWithSecret_SkipsRegister(t *testing.T) {
+	t.Parallel()
+	client, mux, _ := setup(t, mangoplus.WithAndroidID("deadbeef"))
+
+	mux.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+		t.Error("register endpoint called for a client created with CloneWithSecret")
+	})
+
+	child, err := client.CloneWithSecret("child")
+	if err != nil {
+		t.Fatalf("Client.CloneWithSecret returned error: %v", err)
+	}
+
+	secret, err := child.Register(t.Context())
+	if err != nil {
+		t.Fatalf("child Register returned error: %v", err)
+	}
+	if want := "child"; secret != want {
+		t.Errorf("child Register returned %q, want %q", secret, want)
+	}
+}
+
+func TestClient_CloneWithSecret_Options(t *testing.T) {
+	t.Parallel()
+	client, mux, _ := setup(t, mangoplus.WithSecret("parent"))
+
+	got := map[string]http.Header{}
+	mux.HandleFunc("/settings_v2", func(w http.ResponseWriter, r *http.Request) {
+		got[r.URL.Query().Get("secret")] = r.Header.Clone()
+		testWriteSuccess(t, w, &proto.SuccessResult{
+			Data: &proto.SuccessResult_SettingsViewV2{SettingsViewV2: &proto.SettingsViewV2{}},
+		})
+	})
+
+	jar, err := cookiejar.New(nil)
+	if err != nil {
+		t.Fatalf("cookiejar.New returned error: %v", err)
+	}
+
+	child, err := client.CloneWithSecret("child", mangoplus.WithUserAgent("custom-agent"), mangoplus.WithCookieJar(jar))
+	if err != nil {
+		t.Fatalf("Client.CloneWithSecret returned error: %v", err)
+	}
+	if child.CookieJar() != http.CookieJar(jar) {
+		t.Error("child does not use the cookie jar from WithCookieJar")
+	}
+
+	for _, c := range []*mangoplus.Client{client, child} {
+		if _, err := c.Settings.ViewV2(t.Context()); err != nil {
+			t.Fatalf("Settings.ViewV2 returned error: %v", err)
+		}
+	}
+
+	if got, want := got["child"].Get("User-Agent"), "custom-agent"; got != want {
+		t.Errorf("child User-Agent is %q, want %q", got, want)
+	}
+	if got, want := got["parent"].Get("User-Agent"), mangoplus.DefaultUserAgent; got != want {
+		t.Errorf("parent User-Agent is %q, want %q", got, want)
+	}
+}
+
+func TestClient_CloneWithSecret_TransportOption(t *testing.T) {
+	t.Parallel()
+	client, _, _ := setup(t, mangoplus.WithSecret("parent"))
+
+	child, err := client.CloneWithSecret("child", mangoplus.WithTransport(roundTripperFunc(func(*http.Request) (*http.Response, error) {
+		return nil, errors.New("child transport")
+	})))
+	if err != nil {
+		t.Fatalf("Client.CloneWithSecret returned error: %v", err)
+	}
+
+	if _, err := child.Settings.ViewV2(t.Context()); err == nil {
+		t.Error("child Settings.ViewV2 succeeded, want the failing transport from WithTransport")
+	}
+}
+
+func TestClient_CloneWithSecret_RejectedOptions(t *testing.T) {
+	t.Parallel()
+	client, _, _ := setup(t, mangoplus.WithSecret("parent"))
+
+	tests := []struct {
+		name string
+		opt  mangoplus.ClientOptionsFunc
+	}{
+		{"secret", mangoplus.WithSecret("other")},
+		{"android id", mangoplus.WithAndroidID("deadbeef")},
+		{"auto register", mangoplus.WithAutoRegister(context.Background())},
+		{"failing option", mangoplus.WithTransport(nil)},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			if _, err := client.CloneWithSecret("child", tt.opt); err == nil {
+				t.Errorf("Client.CloneWithSecret returned nil error for %s option, want error", tt.name)
+			}
+		})
 	}
 }
