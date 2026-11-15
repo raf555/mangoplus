@@ -143,6 +143,66 @@ func (*Popup_MovieReward) isPopup_Popup() {}
 
 func (*Popup_OneImage_) isPopup_Popup() {}
 
+type PopupList struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Popups         []*Popup               `protobuf:"bytes,1,rep,name=popups,proto3" json:"popups,omitempty"`
+	ActivePopupIds []uint32               `protobuf:"varint,2,rep,packed,name=active_popup_ids,json=activePopupIds,proto3" json:"active_popup_ids,omitempty"`
+	Generation     uint32                 `protobuf:"varint,3,opt,name=generation,proto3" json:"generation,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *PopupList) Reset() {
+	*x = PopupList{}
+	mi := &file_popup_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PopupList) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PopupList) ProtoMessage() {}
+
+func (x *PopupList) ProtoReflect() protoreflect.Message {
+	mi := &file_popup_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PopupList.ProtoReflect.Descriptor instead.
+func (*PopupList) Descriptor() ([]byte, []int) {
+	return file_popup_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *PopupList) GetPopups() []*Popup {
+	if x != nil {
+		return x.Popups
+	}
+	return nil
+}
+
+func (x *PopupList) GetActivePopupIds() []uint32 {
+	if x != nil {
+		return x.ActivePopupIds
+	}
+	return nil
+}
+
+func (x *PopupList) GetGeneration() uint32 {
+	if x != nil {
+		return x.Generation
+	}
+	return 0
+}
+
 type MovieReward struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ImageUrl      string                 `protobuf:"bytes,1,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
@@ -153,7 +213,7 @@ type MovieReward struct {
 
 func (x *MovieReward) Reset() {
 	*x = MovieReward{}
-	mi := &file_popup_proto_msgTypes[1]
+	mi := &file_popup_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -165,7 +225,7 @@ func (x *MovieReward) String() string {
 func (*MovieReward) ProtoMessage() {}
 
 func (x *MovieReward) ProtoReflect() protoreflect.Message {
-	mi := &file_popup_proto_msgTypes[1]
+	mi := &file_popup_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -178,7 +238,7 @@ func (x *MovieReward) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MovieReward.ProtoReflect.Descriptor instead.
 func (*MovieReward) Descriptor() ([]byte, []int) {
-	return file_popup_proto_rawDescGZIP(), []int{1}
+	return file_popup_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *MovieReward) GetImageUrl() string {
@@ -209,7 +269,7 @@ type Popup_OSDefault struct {
 
 func (x *Popup_OSDefault) Reset() {
 	*x = Popup_OSDefault{}
-	mi := &file_popup_proto_msgTypes[2]
+	mi := &file_popup_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -221,7 +281,7 @@ func (x *Popup_OSDefault) String() string {
 func (*Popup_OSDefault) ProtoMessage() {}
 
 func (x *Popup_OSDefault) ProtoReflect() protoreflect.Message {
-	mi := &file_popup_proto_msgTypes[2]
+	mi := &file_popup_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -291,7 +351,7 @@ type Popup_AppDefault struct {
 
 func (x *Popup_AppDefault) Reset() {
 	*x = Popup_AppDefault{}
-	mi := &file_popup_proto_msgTypes[3]
+	mi := &file_popup_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -303,7 +363,7 @@ func (x *Popup_AppDefault) String() string {
 func (*Popup_AppDefault) ProtoMessage() {}
 
 func (x *Popup_AppDefault) ProtoReflect() protoreflect.Message {
-	mi := &file_popup_proto_msgTypes[3]
+	mi := &file_popup_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -357,7 +417,7 @@ type Popup_OneImage struct {
 
 func (x *Popup_OneImage) Reset() {
 	*x = Popup_OneImage{}
-	mi := &file_popup_proto_msgTypes[4]
+	mi := &file_popup_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -369,7 +429,7 @@ func (x *Popup_OneImage) String() string {
 func (*Popup_OneImage) ProtoMessage() {}
 
 func (x *Popup_OneImage) ProtoReflect() protoreflect.Message {
-	mi := &file_popup_proto_msgTypes[4]
+	mi := &file_popup_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -409,7 +469,7 @@ type Popup_Button struct {
 
 func (x *Popup_Button) Reset() {
 	*x = Popup_Button{}
-	mi := &file_popup_proto_msgTypes[5]
+	mi := &file_popup_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -421,7 +481,7 @@ func (x *Popup_Button) String() string {
 func (*Popup_Button) ProtoMessage() {}
 
 func (x *Popup_Button) ProtoReflect() protoreflect.Message {
-	mi := &file_popup_proto_msgTypes[5]
+	mi := &file_popup_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -483,7 +543,13 @@ const file_popup_proto_rawDesc = "" +
 	"\x06Button\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\x12@\n" +
 	"\x06action\x18\x02 \x01(\v2(.jp.co.comic.jump.proto.TransitionActionR\x06actionB\a\n" +
-	"\x05popup\"w\n" +
+	"\x05popup\"\x8c\x01\n" +
+	"\tPopupList\x125\n" +
+	"\x06popups\x18\x01 \x03(\v2\x1d.jp.co.comic.jump.proto.PopupR\x06popups\x12(\n" +
+	"\x10active_popup_ids\x18\x02 \x03(\rR\x0eactivePopupIds\x12\x1e\n" +
+	"\n" +
+	"generation\x18\x03 \x01(\rR\n" +
+	"generation\"w\n" +
 	"\vMovieReward\x12\x1b\n" +
 	"\timage_url\x18\x01 \x01(\tR\bimageUrl\x12K\n" +
 	"\radvertisement\x18\x02 \x01(\v2%.jp.co.comic.jump.proto.AdNetworkListR\radvertisementb\x06proto3"
@@ -500,36 +566,38 @@ func file_popup_proto_rawDescGZIP() []byte {
 	return file_popup_proto_rawDescData
 }
 
-var file_popup_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_popup_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_popup_proto_goTypes = []any{
 	(*Popup)(nil),            // 0: jp.co.comic.jump.proto.Popup
-	(*MovieReward)(nil),      // 1: jp.co.comic.jump.proto.MovieReward
-	(*Popup_OSDefault)(nil),  // 2: jp.co.comic.jump.proto.Popup.OSDefault
-	(*Popup_AppDefault)(nil), // 3: jp.co.comic.jump.proto.Popup.AppDefault
-	(*Popup_OneImage)(nil),   // 4: jp.co.comic.jump.proto.Popup.OneImage
-	(*Popup_Button)(nil),     // 5: jp.co.comic.jump.proto.Popup.Button
-	(*AdNetworkList)(nil),    // 6: jp.co.comic.jump.proto.AdNetworkList
-	(Language)(0),            // 7: jp.co.comic.jump.proto.Language
-	(*TransitionAction)(nil), // 8: jp.co.comic.jump.proto.TransitionAction
+	(*PopupList)(nil),        // 1: jp.co.comic.jump.proto.PopupList
+	(*MovieReward)(nil),      // 2: jp.co.comic.jump.proto.MovieReward
+	(*Popup_OSDefault)(nil),  // 3: jp.co.comic.jump.proto.Popup.OSDefault
+	(*Popup_AppDefault)(nil), // 4: jp.co.comic.jump.proto.Popup.AppDefault
+	(*Popup_OneImage)(nil),   // 5: jp.co.comic.jump.proto.Popup.OneImage
+	(*Popup_Button)(nil),     // 6: jp.co.comic.jump.proto.Popup.Button
+	(*AdNetworkList)(nil),    // 7: jp.co.comic.jump.proto.AdNetworkList
+	(Language)(0),            // 8: jp.co.comic.jump.proto.Language
+	(*TransitionAction)(nil), // 9: jp.co.comic.jump.proto.TransitionAction
 }
 var file_popup_proto_depIdxs = []int32{
-	2,  // 0: jp.co.comic.jump.proto.Popup.os_default:type_name -> jp.co.comic.jump.proto.Popup.OSDefault
-	3,  // 1: jp.co.comic.jump.proto.Popup.app_default:type_name -> jp.co.comic.jump.proto.Popup.AppDefault
-	1,  // 2: jp.co.comic.jump.proto.Popup.movie_reward:type_name -> jp.co.comic.jump.proto.MovieReward
-	4,  // 3: jp.co.comic.jump.proto.Popup.one_image:type_name -> jp.co.comic.jump.proto.Popup.OneImage
-	6,  // 4: jp.co.comic.jump.proto.MovieReward.advertisement:type_name -> jp.co.comic.jump.proto.AdNetworkList
-	5,  // 5: jp.co.comic.jump.proto.Popup.OSDefault.ok_button:type_name -> jp.co.comic.jump.proto.Popup.Button
-	5,  // 6: jp.co.comic.jump.proto.Popup.OSDefault.neutral_button:type_name -> jp.co.comic.jump.proto.Popup.Button
-	5,  // 7: jp.co.comic.jump.proto.Popup.OSDefault.cancel_button:type_name -> jp.co.comic.jump.proto.Popup.Button
-	7,  // 8: jp.co.comic.jump.proto.Popup.OSDefault.language:type_name -> jp.co.comic.jump.proto.Language
-	8,  // 9: jp.co.comic.jump.proto.Popup.AppDefault.action:type_name -> jp.co.comic.jump.proto.TransitionAction
-	8,  // 10: jp.co.comic.jump.proto.Popup.OneImage.action:type_name -> jp.co.comic.jump.proto.TransitionAction
-	8,  // 11: jp.co.comic.jump.proto.Popup.Button.action:type_name -> jp.co.comic.jump.proto.TransitionAction
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	3,  // 0: jp.co.comic.jump.proto.Popup.os_default:type_name -> jp.co.comic.jump.proto.Popup.OSDefault
+	4,  // 1: jp.co.comic.jump.proto.Popup.app_default:type_name -> jp.co.comic.jump.proto.Popup.AppDefault
+	2,  // 2: jp.co.comic.jump.proto.Popup.movie_reward:type_name -> jp.co.comic.jump.proto.MovieReward
+	5,  // 3: jp.co.comic.jump.proto.Popup.one_image:type_name -> jp.co.comic.jump.proto.Popup.OneImage
+	0,  // 4: jp.co.comic.jump.proto.PopupList.popups:type_name -> jp.co.comic.jump.proto.Popup
+	7,  // 5: jp.co.comic.jump.proto.MovieReward.advertisement:type_name -> jp.co.comic.jump.proto.AdNetworkList
+	6,  // 6: jp.co.comic.jump.proto.Popup.OSDefault.ok_button:type_name -> jp.co.comic.jump.proto.Popup.Button
+	6,  // 7: jp.co.comic.jump.proto.Popup.OSDefault.neutral_button:type_name -> jp.co.comic.jump.proto.Popup.Button
+	6,  // 8: jp.co.comic.jump.proto.Popup.OSDefault.cancel_button:type_name -> jp.co.comic.jump.proto.Popup.Button
+	8,  // 9: jp.co.comic.jump.proto.Popup.OSDefault.language:type_name -> jp.co.comic.jump.proto.Language
+	9,  // 10: jp.co.comic.jump.proto.Popup.AppDefault.action:type_name -> jp.co.comic.jump.proto.TransitionAction
+	9,  // 11: jp.co.comic.jump.proto.Popup.OneImage.action:type_name -> jp.co.comic.jump.proto.TransitionAction
+	9,  // 12: jp.co.comic.jump.proto.Popup.Button.action:type_name -> jp.co.comic.jump.proto.TransitionAction
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_popup_proto_init() }
@@ -552,7 +620,7 @@ func file_popup_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_popup_proto_rawDesc), len(file_popup_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
